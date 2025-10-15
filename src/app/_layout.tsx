@@ -1,5 +1,4 @@
-
-import { lightTheme, settings } from '@/settings/theme';
+import { darkTheme, lightTheme, settings } from '@/src/settings/theme';
 import { Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
@@ -8,10 +7,10 @@ import { PaperProvider } from 'react-native-paper';
 export default function RootLayout() {
   const pathname = usePathname();
   const colorScheme = useColorScheme();
-  const theme = lightTheme;
-  // const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+  // const theme = lightTheme;
+  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 
-  function shouldShowHeader(){
+  function shouldShowHeader() {
     const excludePaths = ['index'];
     return !!excludePaths.includes(pathname);
   }

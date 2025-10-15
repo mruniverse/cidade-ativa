@@ -19,10 +19,6 @@ export default function BottomNavigationComponent(
   const { routes, components } = props;
   const renderScene = BottomNavigation.SceneMap(components);
 
-  function isRouteActive(key: string) {
-    return Object.keys(routes).indexOf(key) === index;
-  }
-
   return (
     <BottomNavigation
       navigationState={{ index, routes }}
