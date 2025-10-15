@@ -1,4 +1,4 @@
-import { darkTheme, lightTheme, settings } from '@/settings/theme';
+import { darkTheme, lightTheme, settings } from '@/src/settings/theme';
 import { Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';

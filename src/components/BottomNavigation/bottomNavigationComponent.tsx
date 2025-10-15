@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import {
-  BottomNavigation,
-  BottomNavigationRoute,
-  Text,
-} from 'react-native-paper';
+import { Platform, StyleSheet } from 'react-native';
+import { BottomNavigation, BottomNavigationRoute } from 'react-native-paper';
 
 export interface BottomNavigationProps {
   routes: BottomNavigationRoute[];
@@ -12,16 +9,23 @@ export interface BottomNavigationProps {
   };
 }
 
+const styles = StyleSheet.create({
+  floatingNav: {
+    position: 'absolute',
+    margin: Platform.OS === 'ios' ? 24 : 16,
+    zIndex: 50,
+    width: '92%',
+    borderRadius: 24,
+    overflow: 'hidden',
+  },
+});
+
 export default function BottomNavigationComponent(
   props: Readonly<BottomNavigationProps>
 ) {
   const [index, setIndex] = useState(0);
   const { routes, components } = props;
   const renderScene = BottomNavigation.SceneMap(components);
-
-  function isRouteActive(key: string) {
-    return Object.keys(routes).indexOf(key) === index;
-  }
 
   return (
     <BottomNavigation
@@ -30,27 +34,15 @@ export default function BottomNavigationComponent(
       renderScene={renderScene}
       sceneAnimationEnabled={true}
       barStyle={{
-        boxShadow: '0px 2px 4px 2px rgba(59, 125, 182, 0.068)',
+        ...styles.floatingNav,
       }}
       activeIndicatorStyle={{
-        borderRadius: 8,
+        borderRadius: 16,
         marginTop: 24,
-        width: '260%',
-        height: '220%',
+        padding: '100%',
+        paddingHorizontal: '150%',
       }}
-      renderLabel={({ route, focused, color }) =>
-        focused && (
-          <Text
-            style={{
-              color,
-              fontSize: 12,
-              alignSelf: 'center',
-            }}
-          >
-            {route.title}
-          </Text>
-        )
-      }
+      shifting={true}
     />
   );
 }

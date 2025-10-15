@@ -40,3 +40,10 @@ app-example
 
 # Alternative lock files
 *.lock
+
+# Ignore android/ios build output
+android/
+ios/
+
+# environment files
+.env
