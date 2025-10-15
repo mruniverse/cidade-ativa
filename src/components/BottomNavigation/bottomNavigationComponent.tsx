@@ -29,10 +29,10 @@ export default function BottomNavigationComponent(
         boxShadow: '0px 2px 4px 2px rgba(59, 125, 182, 0.068)',
       }}
       activeIndicatorStyle={{
-        borderRadius: 8,
+        borderRadius: 16,
         marginTop: 24,
-        width: '260%',
-        height: '220%',
+        padding: '100%',
+        paddingHorizontal: '150%',
       }}
       renderLabel={({ route, focused, color }) =>
         focused && (

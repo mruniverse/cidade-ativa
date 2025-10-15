@@ -1,14 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapView from 'react-native-maps';
-
-export default function MapViewComponent() {
-  return (
-    <View style={styles.container}>
-      <MapView style={styles.map} showsUserLocation showsMyLocationButton />
-    </View>
-  );
-}
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,3 +11,24 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
+
+export default function MapViewComponent() {
+  const initialRegion = {
+    latitude: -24.0438,
+    longitude: -52.3811,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
+
+  return (
+    <View style={styles.container}>
+      <MapView
+        style={styles.map}
+        showsUserLocation
+        showsMyLocationButton
+        provider={PROVIDER_GOOGLE}
+        region={initialRegion}
+      />
+    </View>
+  );
+}
