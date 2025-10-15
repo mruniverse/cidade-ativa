@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import {
-  BottomNavigation,
-  BottomNavigationRoute,
-  Text,
-} from 'react-native-paper';
+import { BottomNavigation, BottomNavigationRoute } from 'react-native-paper';
 
 export interface BottomNavigationProps {
   routes: BottomNavigationRoute[];
@@ -27,6 +23,8 @@ export default function BottomNavigationComponent(
       sceneAnimationEnabled={true}
       barStyle={{
         boxShadow: '0px 2px 4px 2px rgba(59, 125, 182, 0.068)',
+        margin: 16,
+        borderRadius: 16,
       }}
       activeIndicatorStyle={{
         borderRadius: 16,
@@ -34,19 +32,7 @@ export default function BottomNavigationComponent(
         padding: '100%',
         paddingHorizontal: '150%',
       }}
-      renderLabel={({ route, focused, color }) =>
-        focused && (
-          <Text
-            style={{
-              color,
-              fontSize: 12,
-              alignSelf: 'center',
-            }}
-          >
-            {route.title}
-          </Text>
-        )
-      }
+      shifting={true}
     />
   );
 }

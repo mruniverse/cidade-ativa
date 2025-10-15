@@ -4,6 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   slug: 'cidade-ativa',
   name: 'Cidade Ativa',
+  scheme: 'cidadeativa',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './src/assets/images/icon.png',
@@ -15,7 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: 'com.mruniverse.cidadeativa',
     adaptiveIcon: {
-      foregroundImage: './src/assets/images/adaptive-icon.png',
+      foregroundImage: './src/assets/images/icon.png',
       backgroundColor: '#0e1e33',
     },
     config: {
