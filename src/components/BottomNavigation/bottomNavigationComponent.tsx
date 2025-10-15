@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 import { BottomNavigation, BottomNavigationRoute } from 'react-native-paper';
 
 export interface BottomNavigationProps {
@@ -7,6 +8,17 @@ export interface BottomNavigationProps {
     [key: string]: React.ComponentType<any>;
   };
 }
+
+const styles = StyleSheet.create({
+  floatingNav: {
+    position: 'absolute',
+    margin: Platform.OS === 'ios' ? 24 : 16,
+    zIndex: 50,
+    width: '92%',
+    borderRadius: 24,
+    overflow: 'hidden',
+  },
+});
 
 export default function BottomNavigationComponent(
   props: Readonly<BottomNavigationProps>
@@ -22,9 +34,7 @@ export default function BottomNavigationComponent(
       renderScene={renderScene}
       sceneAnimationEnabled={true}
       barStyle={{
-        boxShadow: '0px 2px 4px 2px rgba(59, 125, 182, 0.068)',
-        margin: 16,
-        borderRadius: 16,
+        ...styles.floatingNav,
       }}
       activeIndicatorStyle={{
         borderRadius: 16,
