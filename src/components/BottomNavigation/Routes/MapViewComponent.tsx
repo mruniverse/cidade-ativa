@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapSearchBar from '../../MapSearchBarComponent';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,6 +29,7 @@ export default function MapViewComponent() {
         provider={PROVIDER_GOOGLE}
         region={initialRegion}
       />
+      <MapSearchBar value="" onChangeText={text => console.log(text)} />
     </View>
   );
 }
