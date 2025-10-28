@@ -14,11 +14,6 @@ export default function Index() {
       focusedIcon: 'map-location-dot',
     },
     {
-      key: 'new',
-      title: 'Novo',
-      focusedIcon: 'plus',
-    },
-    {
       key: 'contributions',
       title: 'Contribuições',
       focusedIcon: 'handshake',
@@ -32,7 +27,6 @@ export default function Index() {
 
   const components: BottomNavigationProps['components'] = {
     map: MapViewComponent,
-    new: MapViewComponent,
     contributions: () => <Text>Contribuições</Text>,
   };
 

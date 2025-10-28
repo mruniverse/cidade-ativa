@@ -1,8 +1,7 @@
-import { ColorValue, Platform, StyleSheet, View } from 'react-native';
+import { ColorValue, Platform, StyleSheet } from 'react-native';
 import {
   BottomNavigation,
   BottomNavigationRoute,
-  IconButton,
   TouchableRipple,
   TouchableRippleProps,
 } from 'react-native-paper';
@@ -38,22 +37,7 @@ export default function BottomNavigationComponent(
   const customTouchableRipple = (
     props: TouchableProps<BottomNavigationRoute>
   ) => {
-    if (props.key === 'new') {
-      return (
-        <View key={props.key} style={{ justifyContent: 'center' }}>
-          <IconButton
-            key={props.key}
-            mode="contained-tonal"
-            size={32}
-            style={{ ...styles.middleButton, ...styles.defaultBorderRadius }}
-            icon={props.route.focusedIcon || ''}
-            onPress={onPress}
-          />
-        </View>
-      );
-    } else {
-      return <TouchableRipple {...props} key={props.key} />;
-    }
+    return <TouchableRipple {...props} key={props.key} />;
   };
 
   return (
@@ -79,7 +63,7 @@ export default function BottomNavigationComponent(
 
 const styles = StyleSheet.create({
   defaultBorderRadius: {
-    borderRadius: 16,
+    borderRadius: 24,
   },
   defaultMargin: {
     margin: Platform.OS === 'ios' ? 24 : 16,
@@ -88,12 +72,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     overflow: 'hidden',
     zIndex: 50,
-    marginHorizontal: 34,
   },
   activeIndicator: {
     marginTop: 24,
     padding: '100%',
-    paddingHorizontal: '170%',
+    paddingHorizontal: '270%',
+    backgroundColor: 'rgba(0, 0, 120, 0.06)',
   },
   middleButton: {
     height: 64,
