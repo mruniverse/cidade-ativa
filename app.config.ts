@@ -15,10 +15,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: 'com.mruniverse.cidadeativa',
-    adaptiveIcon: {
-      foregroundImage: './src/assets/images/icon.png',
-      backgroundColor: '#0e1e33',
-    },
+    icon: './src/assets/images/icon.png',
     config: {
       googleMaps: {
         apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
