@@ -40,72 +40,63 @@ export default function BottomNavigationComponent(
   ) => {
     if (props.key === 'new') {
       return (
-        <IconButton
-          key={props.key}
-          mode="contained"
-          size={48}
-          style={styles.middleButton}
-          icon={props.route.focusedIcon || ''}
-          onPress={onPress}
-        />
+        <View key={props.key} style={{ justifyContent: 'center' }}>
+          <IconButton
+            key={props.key}
+            mode="contained-tonal"
+            size={32}
+            style={{ ...styles.middleButton, ...styles.defaultBorderRadius }}
+            icon={props.route.focusedIcon || ''}
+            onPress={onPress}
+          />
+        </View>
       );
     } else {
-      return (
-        <TouchableRipple
-          key={props.key}
-          style={{
-            width: '42%',
-            alignSelf: 'center',
-          }}
-        >
-          {props.children}
-        </TouchableRipple>
-      );
+      return <TouchableRipple {...props} key={props.key} />;
     }
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <BottomNavigation
-        navigationState={{ index: props.index, routes }}
-        onIndexChange={props.onIndexChange}
-        renderScene={renderScene}
-        renderTouchable={customTouchableRipple}
-        sceneAnimationEnabled={true}
-        barStyle={{
-          ...styles.floatingNav,
-          ...styles.defaultBorderRadius,
-          ...styles.defaultMargin,
-        }}
-        activeIndicatorStyle={{
-          ...styles.activeIndicator,
-          ...styles.defaultBorderRadius,
-        }}
-        shifting={true}
-      />
-    </View>
+    <BottomNavigation
+      navigationState={{ index: props.index, routes }}
+      onIndexChange={props.onIndexChange}
+      renderScene={renderScene}
+      renderTouchable={customTouchableRipple}
+      sceneAnimationEnabled={true}
+      barStyle={{
+        ...styles.floatingNav,
+        ...styles.defaultBorderRadius,
+        ...styles.defaultMargin,
+      }}
+      activeIndicatorStyle={{
+        ...styles.activeIndicator,
+        ...styles.defaultBorderRadius,
+      }}
+      shifting={true}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   defaultBorderRadius: {
-    borderRadius: 32,
+    borderRadius: 16,
   },
   defaultMargin: {
     margin: Platform.OS === 'ios' ? 24 : 16,
   },
   floatingNav: {
     position: 'absolute',
-    zIndex: 50,
     overflow: 'hidden',
+    zIndex: 50,
+    marginHorizontal: 34,
   },
   activeIndicator: {
     marginTop: 24,
     padding: '100%',
-    paddingHorizontal: '180%',
+    paddingHorizontal: '170%',
   },
   middleButton: {
-    position: 'absolute',
-    alignSelf: 'center',
+    height: 64,
+    width: 64,
   },
 });
