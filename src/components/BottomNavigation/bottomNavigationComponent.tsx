@@ -41,6 +41,7 @@ export default function BottomNavigationComponent(
     if (props.key === 'new') {
       return (
         <IconButton
+          key={props.key}
           mode="contained"
           size={48}
           style={styles.middleButton}
@@ -51,13 +52,14 @@ export default function BottomNavigationComponent(
     } else {
       return (
         <TouchableRipple
-          {...props}
           key={props.key}
           style={{
             width: '42%',
             alignSelf: 'center',
           }}
-        />
+        >
+          {props.children}
+        </TouchableRipple>
       );
     }
   };
