@@ -52,6 +52,7 @@ export default function BottomNavigationComponent(
       return (
         <TouchableRipple
           {...props}
+          key={props.key}
           style={{
             width: '42%',
             alignSelf: 'center',
