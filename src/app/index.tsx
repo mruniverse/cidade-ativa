@@ -1,41 +1,33 @@
-import BottomNavigationComponent, {
-  BottomNavigationProps,
-} from '@/src/components/BottomNavigation/bottomNavigationComponent';
-import { useState } from 'react';
-import { Text } from 'react-native-paper';
-import MapViewComponent from '../components/BottomNavigation/Routes/MapViewComponent';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});
 
 export default function Index() {
-  const [index, setIndex] = useState(0);
-  const [routes] = useState<BottomNavigationProps['routes']>([
-    {
-      key: 'map',
-      title: 'Mapa',
-      focusedIcon: 'map-location-dot',
-    },
-    {
-      key: 'contributions',
-      title: 'Contribuições',
-      focusedIcon: 'handshake',
-    },
-  ]);
-
-  function handleIndexChange(index: number) {
-    setIndex(index);
-    console.log('Index changed to:', index);
-  }
-
-  const components: BottomNavigationProps['components'] = {
-    map: MapViewComponent,
-    contributions: () => <Text>Contribuições</Text>,
+  const initialRegion = {
+    latitude: -24.0438,
+    longitude: -52.3811,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
   };
 
   return (
-    <BottomNavigationComponent
-      index={index}
-      onIndexChange={handleIndexChange}
-      routes={routes}
-      components={components}
-    />
+    <View style={styles.container}>
+      <MapView
+        style={styles.map}
+        showsUserLocation
+        showsMyLocationButton
+        provider={PROVIDER_GOOGLE}
+        region={initialRegion}
+      />
+    </View>
   );
 }

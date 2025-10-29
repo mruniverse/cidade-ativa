@@ -8,8 +8,8 @@ export const lightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    // primary: '#6200EA',
-    // secondary: '#03DAC6',
+    primary: '#dec663',
+    secondary: '#c7c3a0ff',
   },
 };
 
@@ -17,8 +17,8 @@ export const darkTheme = {
   ...MD3DarkTheme,
   colors: {
     ...MD3DarkTheme.colors,
-    // primary: '#BB86FC',
-    // secondary: '#03DAC6',
+    primary: '#dec663',
+    secondary: '#c7c3a0ff',
   },
 };
 
