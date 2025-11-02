@@ -22,7 +22,10 @@ export default function RootLayout() {
             tabBarIcon: ({ size, focused }) => (
               <FontAwesome6
                 name="map"
-                color={focused ? theme.colors.primary : theme.colors.secondary}
+                style={{ marginTop: -5 }}
+                color={
+                  focused ? theme.colors.primary : theme.colors.onSecondary
+                }
                 size={size}
               />
             ),
@@ -34,8 +37,11 @@ export default function RootLayout() {
             title: 'Postagens',
             tabBarIcon: ({ size, focused }) => (
               <FontAwesome6
+                style={{ marginTop: -5 }}
                 name="newspaper"
-                color={focused ? theme.colors.primary : theme.colors.secondary}
+                color={
+                  focused ? theme.colors.primary : theme.colors.onSecondary
+                }
                 size={size}
               />
             ),
@@ -47,8 +53,11 @@ export default function RootLayout() {
             title: 'Perfil',
             tabBarIcon: ({ size, focused }) => (
               <FontAwesome6
+                style={{ marginTop: -5 }}
                 name="user"
-                color={focused ? theme.colors.primary : theme.colors.secondary}
+                color={
+                  focused ? theme.colors.primary : theme.colors.onSecondary
+                }
                 size={size}
               />
             ),

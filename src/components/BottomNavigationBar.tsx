@@ -55,7 +55,6 @@ export default function BottomNavigationBar({
         ...styles.barStyle,
       }}
       activeIndicatorStyle={{
-        ...styles.defaultBorderRadius,
         ...styles.activeIndicatorStyle,
       }}
       onTabPress={({ route, preventDefault }) => {
@@ -112,15 +111,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(40, 40, 40, 0.6)',
   },
   activeIndicatorStyle: {
-    height: 56,
+    height: 52,
     marginTop: 8,
-    paddingHorizontal: '190%',
+    borderRadius: 20,
+    paddingHorizontal: '180%',
     backgroundColor: 'rgba(30, 30, 30, 1)',
   },
   labelStyle: {
     flex: 1,
     textAlign: 'center',
-    marginTop: -6,
+    marginTop: -8,
     color: 'white',
     fontSize: 8,
     fontWeight: '600',

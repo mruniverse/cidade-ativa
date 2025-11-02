@@ -11,7 +11,9 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "eas:build-android": "eas build --platform android --profile development",
+    "eas:build-ios": "eas build --platform ios --profile development"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -40,6 +42,7 @@
     "react-native-gesture-handler": "~2.24.0",
     "react-native-maps": "1.20.1",
     "react-native-paper": "^5.14.5",
+    "react-native-permissions": "^5.4.3",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "~4.11.1",

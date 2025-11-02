@@ -8,8 +8,11 @@ export const lightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#dec663',
-    secondary: '#c7c3a0ff',
+    primary: '#FCBD00',
+    primaryContainer: '#FFE07C',
+    secondary: '#FFF2B4',
+    secondaryContainer: ' #FFFADE',
+    onBackground: '#000000',
   },
 };
 
@@ -17,8 +20,11 @@ export const darkTheme = {
   ...MD3DarkTheme,
   colors: {
     ...MD3DarkTheme.colors,
-    primary: '#dec663',
-    secondary: '#c7c3a0ff',
+    primary: '#FCBD00',
+    primaryContainer: '#FFE07C',
+    secondary: '#FFF2B4',
+    secondaryContainer: ' #FFFADE',
+    onBackground: '#FFFFFF',
   },
 };
 
