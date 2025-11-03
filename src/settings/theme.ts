@@ -3,9 +3,15 @@ import React from 'react';
 import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 import { Settings } from 'react-native-paper/lib/typescript/core/settings';
+import { MD3Theme } from 'react-native-paper/lib/typescript/types';
 
-export const lightTheme = {
+const defaulValues: Partial<MD3Theme> = {
+  roundness: 16,
+};
+
+export const lightTheme: MD3Theme = {
   ...MD3LightTheme,
+  ...defaulValues,
   colors: {
     ...MD3LightTheme.colors,
     primary: '#FCBD00',
@@ -16,8 +22,9 @@ export const lightTheme = {
   },
 };
 
-export const darkTheme = {
+export const darkTheme: MD3Theme = {
   ...MD3DarkTheme,
+  ...defaulValues,
   colors: {
     ...MD3DarkTheme.colors,
     primary: '#FCBD00',

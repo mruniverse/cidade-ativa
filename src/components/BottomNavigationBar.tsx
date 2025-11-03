@@ -4,8 +4,10 @@ import {
   NavigationRoute,
   ParamListBase,
 } from '@react-navigation/native';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { BottomNavigation, Text } from 'react-native-paper';
+import { defaultBottomNavigation } from '../settings/bottomNavigation';
+import defaultMargins from '../settings/margins';
 
 export default function BottomNavigationBar({
   navigation,
@@ -50,8 +52,6 @@ export default function BottomNavigationBar({
         routes: getVisibleRoutes().visibleRoutes,
       }}
       style={{
-        ...styles.defaultMargin,
-        ...styles.defaultBorderRadius,
         ...styles.barStyle,
       }}
       activeIndicatorStyle={{
@@ -97,23 +97,19 @@ export default function BottomNavigationBar({
 }
 
 const styles = StyleSheet.create({
-  defaultBorderRadius: {
-    borderRadius: 24,
-  },
-  defaultMargin: {
-    margin: Platform.OS === 'ios' ? 24 : 16,
-  },
   barStyle: {
+    margin: defaultMargins.default,
+    height: defaultBottomNavigation.height,
+    borderRadius: defaultBottomNavigation.borderRadius,
     position: 'absolute',
     overflow: 'hidden',
     zIndex: 50,
-    height: 64,
     backgroundColor: 'rgba(40, 40, 40, 0.6)',
   },
   activeIndicatorStyle: {
-    height: 52,
+    borderRadius: defaultBottomNavigation.borderRadius - 4,
+    height: defaultBottomNavigation.height - 8,
     marginTop: 8,
-    borderRadius: 20,
     paddingHorizontal: '180%',
     backgroundColor: 'rgba(30, 30, 30, 1)',
   },

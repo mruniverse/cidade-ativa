@@ -7,6 +7,7 @@ import MapView, {
 } from 'react-native-maps';
 import { useTheme } from 'react-native-paper';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import defaultPositions from '../settings/positions';
 import MarkerComponent, { MarkerComponentProps } from './MarkerComponent';
 
 export default function MapViewComponent(props: MapViewProps) {
@@ -60,15 +61,16 @@ export default function MapViewComponent(props: MapViewProps) {
     <MapView
       {...props}
       mapPadding={{
-        left: 0,
         right: 0,
-        top: 38,
-        bottom: 0,
+        left: defaultPositions.left,
+        top: defaultPositions.top,
+        bottom: defaultPositions.bottom,
       }}
       onPress={handleMapPress}
       style={styles.map}
       provider={PROVIDER_GOOGLE}
       region={initialRegion}
+      showsCompass={false}
       showsUserLocation={true}
     >
       {markers.map(marker => (
