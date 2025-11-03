@@ -18,6 +18,6 @@ export default function CustomTextInput(props: TextInputProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 8,
+    paddingHorizontal: 8,
   },
 });

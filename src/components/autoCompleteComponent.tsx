@@ -19,10 +19,22 @@ export default function AutoCompleteComponent(
 ) {
   const theme = useTheme();
   const [selectedItem, setSelectedItem] = useState<{ id: string }>();
+  const [outlineStyle, setOutlineColor] = useState({
+    borderColor: 'rgba(38, 50, 56, 0.1)',
+    borderWidth: 0.8,
+  });
 
   function handleSelectItem(item: any) {
     setSelectedItem(item);
     props.handleSelectItem(item);
+  }
+
+  function handleFocus() {
+    setOutlineColor({ borderColor: theme.colors.primary, borderWidth: 2 });
+  }
+
+  function handleBlur() {
+    setOutlineColor({ borderColor: 'rgba(38, 50, 56, 0.1)', borderWidth: 0.8 });
   }
 
   return (
@@ -31,11 +43,16 @@ export default function AutoCompleteComponent(
         ...props.textInputProps,
         placeholder: props.placeholder,
       }}
-      containerStyle={styles.autocompleteContainer}
+      containerStyle={{
+        ...styles.autocompleteContainer,
+        ...outlineStyle,
+      }}
       inputContainerStyle={{
         ...styles.inputContainer,
         backgroundColor: theme.colors.surface,
       }}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
       clearOnFocus={false}
       closeOnBlur={true}
       closeOnSubmit={false}
@@ -48,12 +65,12 @@ export default function AutoCompleteComponent(
 
 const styles = StyleSheet.create({
   autocompleteContainer: {
-    borderColor: 'rgba(38, 50, 56, 0.1)',
     borderWidth: 0.8,
     borderRadius: defaultBorderRadius - 2,
   },
   inputContainer: {
     height: 48,
+    paddingHorizontal: 8,
     borderRadius: defaultBorderRadius - 2,
   },
 });
