@@ -24,6 +24,12 @@ export default function Index() {
     { id: '5', title: 'Outro' },
   ];
 
+  async function fetchCategories() {
+    const categories = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/categories`
+    );
+  }
+
   function handleFabPress() {
     setModalVisible(true);
   }
