@@ -6,10 +6,9 @@ export default function CustomTextInput(props: TextInputProps) {
 
   return (
     <TextInput
-      style={{ ...styles.container, backgroundColor: theme.colors.surface }}
       {...props}
+      style={{ ...styles.container, backgroundColor: theme.colors.surface }}
       mode="outlined"
-      textColor="rgba(0, 0, 0, 0.87)"
       outlineColor="rgba(38, 50, 56, 0.1)"
       activeOutlineColor={theme.colors.primary}
     />
