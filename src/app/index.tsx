@@ -1,18 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, FAB as Fab, Modal, useTheme } from 'react-native-paper';
+import AutoCompleteComponent from '../components/autoCompleteComponent';
 import MapViewComponent from '../components/MapViewComponent';
-import CustomTextInput from '../components/TextInput';
+import CustomTextInput from '../components/TextInputComponent';
 import defaultMargins from '../settings/margins';
 import defaultPositions from '../settings/positions';
 import defaultBorderRadius from '../settings/radius';
 
 export default function Index() {
   const theme = useTheme();
-  const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [formData, setFormData] = useState({
+    selectedItem: undefined,
+    description: '',
+  });
+
+  const selectDataSet = [
+    { id: '1', title: 'Buraco na rua' },
+    { id: '2', title: 'Luz de rua não funcionando' },
+    { id: '3', title: 'Árvore caída' },
+    { id: '4', title: 'Vazamento de água' },
+    { id: '5', title: 'Outro' },
+  ];
 
   function handleFabPress() {
     setModalVisible(true);
+  }
+
+  function handleSelectItem(item: any) {
+    setFormData(prevData => ({
+      ...prevData,
+      selectedItem: item,
+    }));
   }
 
   return (
@@ -34,6 +54,12 @@ export default function Index() {
         <Card mode="contained" style={{ ...styles.card }}>
           <Card.Title title="Relatar problema" />
           <Card.Content>
+            <AutoCompleteComponent
+              placeholder="Selecione o tipo de problema"
+              handleSelectItem={handleSelectItem}
+              selectedItem={formData.selectedItem}
+              dataSet={selectDataSet}
+            />
             <CustomTextInput
               label="Descreva o problema"
               multiline={true}
