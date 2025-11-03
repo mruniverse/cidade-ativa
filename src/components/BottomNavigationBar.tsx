@@ -107,10 +107,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(40, 40, 40, 0.6)',
   },
   activeIndicatorStyle: {
+    paddingHorizontal: defaultBottomNavigation.activeIndicatorWidth,
     borderRadius: defaultBottomNavigation.borderRadius - 4,
     height: defaultBottomNavigation.height - 8,
     marginTop: 8,
-    paddingHorizontal: '180%',
     backgroundColor: 'rgba(30, 30, 30, 1)',
   },
   labelStyle: {

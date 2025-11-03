@@ -4,34 +4,35 @@ import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 import { Settings } from 'react-native-paper/lib/typescript/core/settings';
 import { MD3Theme } from 'react-native-paper/lib/typescript/types';
+import defaultBorderRadius from './radius';
 
-const defaulValues: Partial<MD3Theme> = {
-  roundness: 16,
+const defaultValues: Partial<MD3Theme> = {
+  roundness: defaultBorderRadius,
 };
 
 export const lightTheme: MD3Theme = {
   ...MD3LightTheme,
-  ...defaulValues,
+  ...defaultValues,
   colors: {
     ...MD3LightTheme.colors,
     primary: '#FCBD00',
     primaryContainer: '#FFE07C',
     secondary: '#FFF2B4',
     secondaryContainer: ' #FFFADE',
-    onBackground: '#000000',
+    background: '#e7e0ec',
   },
 };
 
 export const darkTheme: MD3Theme = {
   ...MD3DarkTheme,
-  ...defaulValues,
+  ...defaultValues,
   colors: {
     ...MD3DarkTheme.colors,
     primary: '#FCBD00',
     primaryContainer: '#FFE07C',
     secondary: '#FFF2B4',
     secondaryContainer: ' #FFFADE',
-    onBackground: '#FFFFFF',
+    background: '#121015',
   },
 };
 

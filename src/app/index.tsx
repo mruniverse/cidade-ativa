@@ -3,7 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import { Card, FAB as Fab, Modal, useTheme } from 'react-native-paper';
 import MapViewComponent from '../components/MapViewComponent';
 import CustomTextInput from '../components/TextInput';
+import defaultMargins from '../settings/margins';
 import defaultPositions from '../settings/positions';
+import defaultBorderRadius from '../settings/radius';
 
 export default function Index() {
   const theme = useTheme();
@@ -29,8 +31,15 @@ export default function Index() {
         onDismiss={() => setModalVisible(false)}
         style={styles.modal}
       >
-        <Card mode="contained" style={styles.card}>
-          <CustomTextInput label="New Post" />
+        <Card mode="contained" style={{ ...styles.card }}>
+          <Card.Title title="Relatar problema" />
+          <Card.Content>
+            <CustomTextInput
+              label="Descreva o problema"
+              multiline={true}
+              numberOfLines={4}
+            />
+          </Card.Content>
         </Card>
       </Modal>
     </View>
@@ -39,10 +48,11 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   modal: {
-    padding: 20,
+    padding: defaultMargins.default,
   },
   card: {
-    padding: 20,
+    padding: 8,
+    borderRadius: defaultBorderRadius + 4,
   },
   container: {
     flex: 1,
