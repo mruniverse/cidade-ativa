@@ -46,6 +46,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         androidPermissions: [PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
       },
     ],
+    [
+      'expo-secure-store',
+      {
+        configureAndroidBackup: true,
+        faceIDPermission:
+          'Allow $(PRODUCT_NAME) to access your Face ID biometric data.',
+      },
+    ],
   ],
   extra: {
     eas: {

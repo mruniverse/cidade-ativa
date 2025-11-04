@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, FAB as Fab, Modal, useTheme } from 'react-native-paper';
+import ApiService from '../api/api.service';
 import AutoCompleteComponent from '../components/autoCompleteComponent';
 import MapViewComponent from '../components/MapViewComponent';
 import CustomTextInput from '../components/TextInputComponent';
@@ -10,25 +11,20 @@ import defaultBorderRadius from '../settings/radius';
 
 export default function Index() {
   const theme = useTheme();
+  const api = new ApiService();
   const [modalVisible, setModalVisible] = useState(false);
   const [formData, setFormData] = useState({
     selectedItem: undefined,
     description: '',
   });
+  const [categories, setCategories] = useState<any[]>([]);
 
-  const selectDataSet = [
-    { id: '1', title: 'Buraco na rua' },
-    { id: '2', title: 'Luz de rua não funcionando' },
-    { id: '3', title: 'Árvore caída' },
-    { id: '4', title: 'Vazamento de água' },
-    { id: '5', title: 'Outro' },
-  ];
-
-  async function fetchCategories() {
-    const categories = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/categories`
-    );
-  }
+  useEffect(() => {
+    api.get('api/categories').then(async response => {
+      const data = (await response.json()) as any[];
+      setCategories(data.map(item => ({ title: item.name, id: item.id })));
+    });
+  }, []);
 
   function handleFabPress() {
     setModalVisible(true);
@@ -64,7 +60,7 @@ export default function Index() {
               placeholder="Selecione o tipo de problema"
               handleSelectItem={handleSelectItem}
               selectedItem={formData.selectedItem}
-              dataSet={selectDataSet}
+              dataSet={categories}
             />
             <CustomTextInput
               label="Descreva o problema"
