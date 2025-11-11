@@ -1,4 +1,4 @@
-import { ConfigContext, ExpoConfig } from 'expo/config';
+import {ConfigContext, ExpoConfig} from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -16,6 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: 'com.mruniverse.cidadeativa',
     icon: './src/assets/images/icon.png',
+    permissions: ["android.permission.ACCESS_FINE_LOCATION"],
     config: {
       googleMaps: {
         apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,

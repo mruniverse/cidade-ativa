@@ -1,15 +1,49 @@
-import React, {useState} from 'react';
+import {
+  getCurrentPositionAsync,
+  LocationAccuracy,
+  LocationObject,
+  requestForegroundPermissionsAsync,
+  watchPositionAsync,
+} from 'expo-location';
+import React, {useEffect, useRef, useState} from 'react';
 import {Button, Modal, StyleSheet, Text, View} from 'react-native';
 import MapView from 'react-native-maps';
 import IssueMarker, {IssueType} from '../components/IssueMarker';
 
 export default function Index() {
-  const initialRegion = {
-    latitude: -24.0438,
-    longitude: -52.3811,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
+  const [location, setLocation] = useState<LocationObject | null>(null);
+
+  const mapRef = useRef<MapView>(null);
+
+  async function requestLocationPermissions() {
+    const { granted } = await requestForegroundPermissionsAsync();
+
+    if (granted) {
+      const currentPosition = await getCurrentPositionAsync();
+      setLocation(currentPosition);
+    }
+  }
+
+  useEffect(() => {
+    requestLocationPermissions();
+  }, []);
+
+  useEffect(() => {
+    watchPositionAsync(
+      {
+        accuracy: LocationAccuracy.Highest,
+        timeInterval: 1000,
+        distanceInterval: 1,
+      },
+      response => {
+        setLocation(response);
+        mapRef.current?.animateCamera({
+          pitch: 70,
+          center: response.coords,
+        });
+      }
+    );
+  }, []);
 
   // exemplo de issues; adapte para carregar de API/estado conforme necessário
   type Issue = {
@@ -41,23 +75,29 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        showsUserLocation
-        showsMyLocationButton
-        region={initialRegion}
-      >
-        {issues.map(issue => (
-          <IssueMarker
-            key={issue.id}
-            coordinate={issue.coordinate}
-            type={issue.type}
-            title={issue.title}
-            description={issue.description}
-            onPress={() => setSelectedIssue(issue)}
-          />
-        ))}
-      </MapView>
+      {location && (
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          initialRegion={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
+          }}
+        >
+          {issues.map(issue => (
+            <IssueMarker
+              key={issue.id}
+              coordinate={issue.coordinate}
+              type={issue.type}
+              title={issue.title}
+              description={issue.description}
+              onPress={() => setSelectedIssue(issue)}
+            />
+          ))}
+        </MapView>
+      )}
 
       <Modal
         visible={selectedIssue !== null}

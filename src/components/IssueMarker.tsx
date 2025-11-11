@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-	Image,
-	ImageSourcePropType,
-	StyleSheet,
-	Text,
-	View,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import {Marker} from 'react-native-maps';
 
@@ -49,6 +49,7 @@ export default function IssueMarker({
 }: IssueMarkerProps) {
   return (
     <Marker
+      draggable
       coordinate={coordinate}
       title={title}
       description={description}
