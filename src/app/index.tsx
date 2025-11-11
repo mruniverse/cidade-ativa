@@ -1,6 +1,85 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import React, {useState} from 'react';
+import {Button, Modal, StyleSheet, Text, View} from 'react-native';
+import MapView from 'react-native-maps';
+import IssueMarker, {IssueType} from '../components/IssueMarker';
+
+export default function Index() {
+  const initialRegion = {
+    latitude: -24.0438,
+    longitude: -52.3811,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
+
+  // exemplo de issues; adapte para carregar de API/estado conforme necessário
+  type Issue = {
+    id: string;
+    coordinate: { latitude: number; longitude: number };
+    type: IssueType;
+    title?: string;
+    description?: string;
+  };
+
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+
+  const issues: Issue[] = [
+    {
+      id: '1',
+      coordinate: { latitude: -24.0438, longitude: -52.3811 },
+      type: IssueType.Buraco,
+      title: 'Buraco na rua',
+      description: 'Grande buraco próximo ao cruzamento',
+    },
+    {
+      id: '2',
+      coordinate: { latitude: -24.046, longitude: -52.383 },
+      type: IssueType.MaSinalizacao,
+      title: 'Sinalização ruim',
+      description: 'Sem placa de alerta na curva',
+    },
+  ];
+
+  return (
+    <View style={styles.container}>
+      <MapView
+        style={styles.map}
+        showsUserLocation
+        showsMyLocationButton
+        region={initialRegion}
+      >
+        {issues.map(issue => (
+          <IssueMarker
+            key={issue.id}
+            coordinate={issue.coordinate}
+            type={issue.type}
+            title={issue.title}
+            description={issue.description}
+            onPress={() => setSelectedIssue(issue)}
+          />
+        ))}
+      </MapView>
+
+      <Modal
+        visible={selectedIssue !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setSelectedIssue(null)}
+      >
+        <View style={modalStyles.overlay}>
+          <View style={modalStyles.content}>
+            <Text style={modalStyles.title}>{selectedIssue?.title}</Text>
+            <Text style={modalStyles.description}>
+              {selectedIssue?.description}
+            </Text>
+            <View style={modalStyles.actions}>
+              <Button title="Fechar" onPress={() => setSelectedIssue(null)} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -11,23 +90,34 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Index() {
-  const initialRegion = {
-    latitude: -24.0438,
-    longitude: -52.3811,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
-
-  return (
-    <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        showsUserLocation
-        showsMyLocationButton
-        provider={PROVIDER_GOOGLE}
-        region={initialRegion}
-      />
-    </View>
-  );
-}
+const modalStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  content: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 16,
+    width: '100%',
+    maxWidth: 420,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 12,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+});
