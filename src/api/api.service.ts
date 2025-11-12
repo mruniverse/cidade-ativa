@@ -19,11 +19,10 @@ export default class ApiService implements ApiServiceInterface {
   }
 
   async get(endpoint: string, params?: Record<string, string>) {
-    const queryString = params ? new URLSearchParams(params).toString() : '';
     console.log(
-      'GET Request URL:',
-      `${this.apiUrl}/${endpoint}/?${queryString}`
+      `GET Request URL: ${this.apiUrl}/${endpoint}/?${new URLSearchParams(params).toString()}`
     );
+    const queryString = params ? new URLSearchParams(params).toString() : '';
     return fetch(`${this.apiUrl}/${endpoint}/?${queryString}`, {
       headers: { ...(await this.getAuthorizationHeader()) },
     }).catch(error => {
@@ -33,6 +32,7 @@ export default class ApiService implements ApiServiceInterface {
   }
 
   async post(endpoint: string, body: any) {
+    console.log(`${this.apiUrl}/${endpoint}/`);
     return fetch(`${this.apiUrl}/${endpoint}/`, {
       method: 'POST',
       headers: {

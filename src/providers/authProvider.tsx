@@ -45,9 +45,19 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
     const apiService = new ApiService({ shouldAuthenticate: false });
     const response = await apiService
       .post('accounts/login', { username: 'guest', senha: 'guest' })
-      .then(async response => response.json() as Promise<LoginResponse>);
-    const secureStorageSerivce = new SecureStoreService();
-    secureStorageSerivce.setItem('authorization', response.access);
+      .then(async response => {
+        console.log('Login response status:', response.status);
+        return response.json() as Promise<LoginResponse>;
+      })
+      .catch(error => {
+        console.error('Error fetching guest user:', error);
+        return null;
+      });
+    if (!response) return;
+
+    console.log('Guest user logged in:', response.usuario);
+    const secureStorageService = new SecureStoreService();
+    secureStorageService.setItem('authorization', response.access);
     setUser(response.usuario);
   }
 
