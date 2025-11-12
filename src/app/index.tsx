@@ -24,7 +24,7 @@ export default function Index() {
       const data = (await response.json()) as any[];
       setCategories(data.map(item => ({ title: item.name, id: item.id })));
     });
-  });
+  }, [categories.length]);
 
   function handleFabPress() {
     setModalVisible(true);

@@ -24,7 +24,9 @@ export default class ApiService implements ApiServiceInterface {
     );
     const queryString = params ? new URLSearchParams(params).toString() : '';
     return fetch(`${this.apiUrl}/${endpoint}/?${queryString}`, {
-      headers: { ...(await this.getAuthorizationHeader()) },
+      headers: {
+        ...(await this.getAuthorizationHeader()),
+      },
     }).catch(error => {
       console.error('API Service GET Error:', error);
       throw error;
