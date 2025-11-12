@@ -1,3 +1,4 @@
+import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
@@ -51,6 +52,24 @@ export default function AutoCompleteComponent(
         ...styles.inputContainer,
         backgroundColor: theme.colors.surface,
       }}
+      rightButtonsContainerStyle={styles.rightButtonsContainer}
+      suggestionsListContainerStyle={styles.suggestionsListContainer}
+      ChevronIconComponent={
+        <FontAwesome6
+          iconStyle="solid"
+          name="chevron-down"
+          size={18}
+          color="gray"
+        />
+      }
+      ClearIconComponent={
+        <FontAwesome6
+          iconStyle="solid"
+          name="circle-xmark"
+          size={18}
+          color="gray"
+        />
+      }
       onFocus={handleFocus}
       onBlur={handleBlur}
       clearOnFocus={false}
@@ -69,8 +88,13 @@ const styles = StyleSheet.create({
     borderRadius: defaultBorderRadius - 2,
   },
   inputContainer: {
-    height: 48,
+    height: 58,
     paddingHorizontal: 8,
     borderRadius: defaultBorderRadius - 2,
+  },
+  rightButtonsContainer: { marginVertical: 8 },
+  suggestionsListContainer: {
+    maxHeight: 150,
+    borderRadius: defaultBorderRadius,
   },
 });

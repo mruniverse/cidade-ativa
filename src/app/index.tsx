@@ -55,7 +55,7 @@ export default function Index() {
       >
         <Card mode="contained" style={{ ...styles.card }}>
           <Card.Title title="Relatar problema" />
-          <Card.Content>
+          <Card.Content style={{ gap: 4 }}>
             <AutoCompleteComponent
               placeholder="Selecione o tipo de problema"
               handleSelectItem={handleSelectItem}
@@ -63,7 +63,7 @@ export default function Index() {
               dataSet={categories}
             />
             <CustomTextInput
-              label="Descreva o problema"
+              placeholder="Descreva o problema"
               multiline={true}
               numberOfLines={4}
             />
