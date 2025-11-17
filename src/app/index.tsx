@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Card, FAB as Fab, Modal, useTheme } from 'react-native-paper';
-import ApiService from '../api/api.service';
-import AutoCompleteComponent from '../components/autoCompleteComponent';
-import MapViewComponent from '../components/MapViewComponent';
-import CustomTextInput from '../components/TextInputComponent';
-import defaultMargins from '../settings/margins';
-import defaultPositions from '../settings/positions';
-import defaultBorderRadius from '../settings/radius';
+import React, {useState} from 'react';
+import {Button, Modal, StyleSheet, Text, View} from 'react-native';
+import MapView from 'react-native-maps';
+import IssueMarker, {IssueType} from '../components/IssueMarker';
 
 export default function Index() {
   const theme = useTheme();
@@ -37,58 +31,113 @@ export default function Index() {
     }));
   }
 
+  // exemplo de issues; adapte para carregar de API/estado conforme necessário
+  type Issue = {
+    id: string;
+    coordinate: { latitude: number; longitude: number };
+    type: IssueType;
+    title?: string;
+    description?: string;
+  };
+
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+
+  const issues: Issue[] = [
+    {
+      id: '1',
+      coordinate: { latitude: -24.0438, longitude: -52.3811 },
+      type: IssueType.Buraco,
+      title: 'Buraco na rua',
+      description: 'Grande buraco próximo ao cruzamento',
+    },
+    {
+      id: '2',
+      coordinate: { latitude: -24.046, longitude: -52.383 },
+      type: IssueType.MaSinalizacao,
+      title: 'Sinalização ruim',
+      description: 'Sem placa de alerta na curva',
+    },
+  ];
+
   return (
     <View style={styles.container}>
-      <Fab
-        onPress={handleFabPress}
-        icon="plus"
-        style={{
-          ...styles.buttonContainer,
-          borderRadius: theme.roundness,
-        }}
-      />
-      <MapViewComponent />
-      <Modal
-        visible={modalVisible}
-        onDismiss={() => setModalVisible(false)}
-        style={styles.modal}
+      <MapView
+        style={styles.map}
+        showsUserLocation
+        showsMyLocationButton
+        region={initialRegion}
       >
-        <Card mode="contained" style={{ ...styles.card }}>
-          <Card.Title title="Relatar problema" />
-          <Card.Content style={{ gap: 4 }}>
-            <AutoCompleteComponent
-              placeholder="Selecione o tipo de problema"
-              handleSelectItem={handleSelectItem}
-              selectedItem={formData.selectedItem}
-              dataSet={categories}
-            />
-            <CustomTextInput
-              placeholder="Descreva o problema"
-              multiline={true}
-              numberOfLines={4}
-            />
-          </Card.Content>
-        </Card>
+        {issues.map(issue => (
+          <IssueMarker
+            key={issue.id}
+            coordinate={issue.coordinate}
+            type={issue.type}
+            title={issue.title}
+            description={issue.description}
+            onPress={() => setSelectedIssue(issue)}
+          />
+        ))}
+      </MapView>
+
+      <Modal
+        visible={selectedIssue !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setSelectedIssue(null)}
+      >
+        <View style={modalStyles.overlay}>
+          <View style={modalStyles.content}>
+            <Text style={modalStyles.title}>{selectedIssue?.title}</Text>
+            <Text style={modalStyles.description}>
+              {selectedIssue?.description}
+            </Text>
+            <View style={modalStyles.actions}>
+              <Button title="Fechar" onPress={() => setSelectedIssue(null)} />
+            </View>
+          </View>
+        </View>
       </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  modal: {
-    padding: defaultMargins.default,
-  },
-  card: {
-    padding: 8,
-    borderRadius: defaultBorderRadius + 4,
-  },
   container: {
     flex: 1,
   },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: defaultPositions.bottom,
-    right: defaultPositions.right,
-    zIndex: 1,
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});
+
+const modalStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  content: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 16,
+    width: '100%',
+    maxWidth: 420,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 12,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
 });
