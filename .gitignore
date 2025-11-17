@@ -44,7 +44,6 @@ app-example
 # Ignore android/ios build output
 android/
 ios/
-credentials/
 
 # environment files
 .env

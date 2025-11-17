@@ -1,5 +1,4 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
-import { PERMISSIONS } from 'react-native-permissions';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -13,15 +12,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.mruniverse.cidadeativa',
-    infoPlist: {
-      NSLocationWhenInUseUsageDescription:
-        'Este aplicativo utiliza sua localização para mostrar pontos de interesse próximos a você.',
-    },
   },
   android: {
     package: 'com.mruniverse.cidadeativa',
     icon: './src/assets/images/icon.png',
-    permissions: [PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
     config: {
       googleMaps: {
         apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -37,21 +31,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         imageWidth: 200,
         resizeMode: 'contain',
         backgroundColor: '#0e1e33',
-      },
-    ],
-    [
-      'react-native-permissions',
-      {
-        iosPermissions: [PERMISSIONS.IOS.LOCATION_WHEN_IN_USE],
-        androidPermissions: [PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
-      },
-    ],
-    [
-      'expo-secure-store',
-      {
-        configureAndroidBackup: true,
-        faceIDPermission:
-          'Allow $(PRODUCT_NAME) to access your Face ID biometric data.',
       },
     ],
   ],

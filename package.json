@@ -11,9 +11,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "eas:build-android": "eas build --platform android --profile development",
-    "eas:build-ios": "eas build --platform ios --profile development"
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

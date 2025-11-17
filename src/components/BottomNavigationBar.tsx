@@ -4,10 +4,8 @@ import {
   NavigationRoute,
   ParamListBase,
 } from '@react-navigation/native';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { BottomNavigation, Text } from 'react-native-paper';
-import { defaultBottomNavigation } from '../settings/bottomNavigation';
-import defaultMargins from '../settings/margins';
 
 export default function BottomNavigationBar({
   navigation,
@@ -52,9 +50,12 @@ export default function BottomNavigationBar({
         routes: getVisibleRoutes().visibleRoutes,
       }}
       style={{
+        ...styles.defaultMargin,
+        ...styles.defaultBorderRadius,
         ...styles.barStyle,
       }}
       activeIndicatorStyle={{
+        ...styles.defaultBorderRadius,
         ...styles.activeIndicatorStyle,
       }}
       onTabPress={({ route, preventDefault }) => {
@@ -97,26 +98,29 @@ export default function BottomNavigationBar({
 }
 
 const styles = StyleSheet.create({
+  defaultBorderRadius: {
+    borderRadius: 24,
+  },
+  defaultMargin: {
+    margin: Platform.OS === 'ios' ? 24 : 16,
+  },
   barStyle: {
-    margin: defaultMargins.default,
-    height: defaultBottomNavigation.height,
-    borderRadius: defaultBottomNavigation.borderRadius,
     position: 'absolute',
     overflow: 'hidden',
     zIndex: 50,
+    height: 64,
     backgroundColor: 'rgba(40, 40, 40, 0.6)',
   },
   activeIndicatorStyle: {
-    paddingHorizontal: defaultBottomNavigation.activeIndicatorWidth,
-    borderRadius: defaultBottomNavigation.borderRadius - 4,
-    height: defaultBottomNavigation.height - 8,
+    height: 56,
     marginTop: 8,
+    paddingHorizontal: '190%',
     backgroundColor: 'rgba(30, 30, 30, 1)',
   },
   labelStyle: {
     flex: 1,
     textAlign: 'center',
-    marginTop: -8,
+    marginTop: -6,
     color: 'white',
     fontSize: 8,
     fontWeight: '600',
