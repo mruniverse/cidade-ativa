@@ -4,12 +4,32 @@ import MapView from 'react-native-maps';
 import IssueMarker, {IssueType} from '../components/IssueMarker';
 
 export default function Index() {
-  const initialRegion = {
-    latitude: -24.0438,
-    longitude: -52.3811,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
+  const theme = useTheme();
+  const api = new ApiService();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [formData, setFormData] = useState({
+    selectedItem: undefined,
+    description: '',
+  });
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.get('api/categories').then(async response => {
+      const data = (await response.json()) as any[];
+      setCategories(data.map(item => ({ title: item.name, id: item.id })));
+    });
+  }, [categories.length]);
+
+  function handleFabPress() {
+    setModalVisible(true);
+  }
+
+  function handleSelectItem(item: any) {
+    setFormData(prevData => ({
+      ...prevData,
+      selectedItem: item,
+    }));
+  }
 
   // exemplo de issues; adapte para carregar de API/estado conforme necessário
   type Issue = {
