@@ -13,6 +13,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.mruniverse.cidadeativa',
+    config: {
+      googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+    },
     infoPlist: {
       NSLocationWhenInUseUsageDescription:
         'Este aplicativo utiliza sua localização para mostrar pontos de interesse próximos a você.',
