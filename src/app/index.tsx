@@ -1,48 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Card, FAB as Fab, Modal, useTheme } from 'react-native-paper';
-import ApiService from '../api/api.service';
-import AutoCompleteComponent from '../components/autoCompleteComponent';
+import { FAB as Fab, useTheme } from 'react-native-paper';
+import CameraComponent from '../components/CameraComponent';
 import MapViewComponent from '../components/MapViewComponent';
-import CustomTextInput from '../components/TextInputComponent';
-import defaultMargins from '../settings/margins';
+import NewPostModal from '../components/NewPostModal';
 import defaultPositions from '../settings/positions';
-import defaultBorderRadius from '../settings/radius';
 
 export default function Index() {
   const theme = useTheme();
-  const api = new ApiService();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [formData, setFormData] = useState({
-    selectedItem: undefined,
-    description: '',
-  });
-  const [categories, setCategories] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  function fetchCategories() {
-    api.get('api/categories').then(async response => {
-      const data = (await response.json()) as any[];
-      if (data?.length > 0) {
-        setCategories(data.map(item => ({ title: item.name, id: item.id })));
-      } else {
-        console.log('No categories found.', data);
-      }
-    });
-  }
+  const [isCameraVisible, setIsCameraVisible] = useState(false);
+  const [takenPhotoUri, setTakenPhotoUri] = useState<string | null>(null);
+  const [isNewPostModalVisible, setIsNewPostModalVisible] = useState(false);
+  const [newMarker, setNewMarker] = useState<any>(null);
 
   function handleFabPress() {
-    setModalVisible(true);
+    setIsCameraVisible(true);
   }
 
-  function handleSelectItem(item: any) {
-    setFormData(prevData => ({
-      ...prevData,
-      selectedItem: item,
-    }));
+  function handlePictureTaken(photoUri: string) {
+    setTakenPhotoUri(photoUri);
+    setIsCameraVisible(false);
+    setIsNewPostModalVisible(true);
+    console.log('Photo taken with URI:', photoUri);
+  }
+
+  function handleSavePost(postData: any) {
+    setNewMarker(postData);
+    setIsNewPostModalVisible(false);
+    setTakenPhotoUri(null);
   }
 
   return (
@@ -55,41 +40,23 @@ export default function Index() {
           borderRadius: theme.roundness,
         }}
       />
-      <MapViewComponent />
-      <Modal
-        visible={modalVisible}
-        onDismiss={() => setModalVisible(false)}
-        style={styles.modal}
-      >
-        <Card mode="contained" style={{ ...styles.card }}>
-          <Card.Title title="Relatar problema" />
-          <Card.Content style={{ gap: 4 }}>
-            <AutoCompleteComponent
-              placeholder="Selecione o tipo de problema"
-              handleSelectItem={handleSelectItem}
-              selectedItem={formData.selectedItem}
-              dataSet={categories}
-            />
-            <CustomTextInput
-              placeholder="Descreva o problema"
-              multiline={true}
-              numberOfLines={4}
-            />
-          </Card.Content>
-        </Card>
-      </Modal>
+      <MapViewComponent onNewMarker={newMarker} />
+      <CameraComponent
+        isVisible={isCameraVisible}
+        handleToggleModal={setIsCameraVisible}
+        handlePictureTaken={handlePictureTaken}
+      />
+      <NewPostModal
+        isVisible={isNewPostModalVisible}
+        handleToggleModal={setIsNewPostModalVisible}
+        takenPhotoUri={takenPhotoUri || undefined}
+        onSavePost={handleSavePost}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  modal: {
-    padding: defaultMargins.default,
-  },
-  card: {
-    padding: 8,
-    borderRadius: defaultBorderRadius + 4,
-  },
   container: {
     flex: 1,
   },

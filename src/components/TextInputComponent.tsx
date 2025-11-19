@@ -11,7 +11,7 @@ export default function CustomTextInput(props: TextInputProps) {
       {...props}
       style={{ ...styles.container, backgroundColor: theme.colors.surface }}
       mode="outlined"
-      outlineColor="rgba(38, 50, 56, 0.1)"
+      outlineColor="rgba(38, 50, 56, 0.2)"
       activeOutlineColor={theme.colors.primary}
       label=""
       placeholder={placeholder}
