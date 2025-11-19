@@ -20,11 +20,19 @@ export default function Index() {
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  function fetchCategories() {
     api.get('api/categories').then(async response => {
       const data = (await response.json()) as any[];
-      setCategories(data?.map(item => ({ title: item.name, id: item.id })));
+      if (data?.length > 0) {
+        setCategories(data.map(item => ({ title: item.name, id: item.id })));
+      } else {
+        console.log('No categories found.', data);
+      }
     });
-  }, [categories.length]);
+  }
 
   function handleFabPress() {
     setModalVisible(true);

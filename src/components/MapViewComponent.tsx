@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import * as Location from 'expo-location';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import MapView, {
   MapPressEvent,
@@ -12,8 +13,9 @@ import MarkerComponent, { MarkerComponentProps } from './MarkerComponent';
 
 export default function MapViewComponent(props: MapViewProps) {
   const theme = useTheme();
+  const mapScale = 4;
+  const mapRef = useRef<MapView | null>(null);
   const [markers, setMarkers] = useState<MarkerComponentProps[]>([]);
-
   const initialRegion = {
     latitude: -24.0438,
     longitude: -52.3811,
@@ -24,6 +26,7 @@ export default function MapViewComponent(props: MapViewProps) {
   useEffect(() => {
     request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION).then(result => {
       console.log('Location permission result:', result);
+      setUserCurrentLocationOnMap();
     });
 
     setMarkers([
@@ -39,6 +42,19 @@ export default function MapViewComponent(props: MapViewProps) {
     ]);
   }, []);
 
+  function setUserCurrentLocationOnMap() {
+    Location.getCurrentPositionAsync({}).then(location => {
+      if (location) {
+        mapRef.current?.animateToRegion({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.0922 / mapScale,
+          longitudeDelta: 0.0421 / mapScale,
+        });
+      }
+    });
+  }
+
   function handleMapPress(event: MapPressEvent) {
     const coordinate = event.nativeEvent.coordinate;
     const newMarker: MarkerComponentProps = {
@@ -52,14 +68,13 @@ export default function MapViewComponent(props: MapViewProps) {
       pinColor: theme.colors.primary,
     };
 
-    console.log('Map pressed at coordinate:', newMarker);
-
     setMarkers([...markers, newMarker]);
   }
 
   return (
     <MapView
       {...props}
+      ref={mapRef}
       mapPadding={{
         right: 0,
         left: defaultPositions.left,
