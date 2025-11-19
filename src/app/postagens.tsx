@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-paper';
 
-import ApiService from '../api/api.service';
+import { ApiService } from '../api/api.service';
 import PostCard from '../components/PostCard';
 import { Post } from '../types/post';
 
@@ -21,6 +21,7 @@ export default function Postagens() {
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     null
   );
+  const api = new ApiService();
 
   useEffect(() => {
     (async () => {
@@ -42,13 +43,15 @@ export default function Postagens() {
   }, []);
 
   useEffect(() => {
-    if (coords) loadPosts(1, coords.lat, coords.lon);
+    if (!coords) return;
+
+    loadPosts(1, coords.lat, coords.lon);
   }, [coords]);
 
   async function loadPosts(page: number, lat: number, lon: number) {
     setLoading(true);
     try {
-      const data = await ApiService.getPosts(page, lat, lon);
+      const data = await api.getPosts(page, lat, lon);
       if (!data) throw new Error('Nenhuma postagem encontrada');
       setPosts(prev => (page === 1 ? data : [...prev, ...data]));
       setError(null);

@@ -67,7 +67,7 @@ export class ApiService implements ApiServiceInterface {
   }
 
   async getPosts(page: number, lat: number, lon: number): Promise<Post[]> {
-    const response = await this.get('forum/nearby', {
+    const response = await this.get('postagens', {
       page: page.toString(),
       lat: lat.toString(),
       lon: lon.toString(),
