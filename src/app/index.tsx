@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, FAB as Fab, Modal, useTheme } from 'react-native-paper';
-import ApiService from '../api/api.service';
+import { ApiService } from '../api/api.service';
 import AutoCompleteComponent from '../components/autoCompleteComponent';
 import MapViewComponent from '../components/MapViewComponent';
 import CustomTextInput from '../components/TextInputComponent';

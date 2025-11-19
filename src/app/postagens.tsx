@@ -1,11 +1,16 @@
-import * as Location from "expo-location";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, RefreshControl, View } from "react-native";
-import { Text } from "react-native-paper";
+import * as Location from 'expo-location';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  View,
+} from 'react-native';
+import { Text } from 'react-native-paper';
 
-import ApiService from "../api/api.service";
-import PostCard from "../components/PostCard";
-import { Post } from "../types/post";
+import ApiService from '../api/api.service';
+import PostCard from '../components/PostCard';
+import { Post } from '../types/post';
 
 export default function Postagens() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -13,20 +18,25 @@ export default function Postagens() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
+    null
+  );
 
   useEffect(() => {
     (async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          setError("Permissão de localização negada");
+        if (status !== 'granted') {
+          setError('Permissão de localização negada');
           return;
         }
         let location = await Location.getCurrentPositionAsync({});
-        setCoords({ lat: location.coords.latitude, lon: location.coords.longitude });
+        setCoords({
+          lat: location.coords.latitude,
+          lon: location.coords.longitude,
+        });
       } catch {
-        setError("Erro ao obter localização");
+        setError('Erro ao obter localização');
       }
     })();
   }, []);
@@ -39,6 +49,7 @@ export default function Postagens() {
     setLoading(true);
     try {
       const data = await ApiService.getPosts(page, lat, lon);
+      if (!data) throw new Error('Nenhuma postagem encontrada');
       setPosts(prev => (page === 1 ? data : [...prev, ...data]));
       setError(null);
     } catch (err: any) {
@@ -50,8 +61,8 @@ export default function Postagens() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
-      {error && <Text style={{ color: "red", margin: 10 }}>{error}</Text>}
+    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+      {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
       <FlatList
         data={posts}
         keyExtractor={item => item.id}
@@ -71,7 +82,9 @@ export default function Postagens() {
             }}
           />
         }
-        ListFooterComponent={loading ? <ActivityIndicator size="large" /> : null}
+        ListFooterComponent={
+          loading ? <ActivityIndicator size="large" /> : null
+        }
       />
     </View>
   );

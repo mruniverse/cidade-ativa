@@ -1,8 +1,8 @@
 import SecureStoreService from '../storage/secureStore.service';
-import { Post } from "../types/post";
+import { Post } from '../types/post';
 import ApiServiceInterface from './api.interface';
 
-class ApiService implements ApiServiceInterface {
+export class ApiService implements ApiServiceInterface {
   private readonly apiUrl = process.env.EXPO_PUBLIC_API_URL;
   private readonly secureStoreService = new SecureStoreService();
   private readonly shouldAuthenticate: boolean;
@@ -67,19 +67,17 @@ class ApiService implements ApiServiceInterface {
   }
 
   async getPosts(page: number, lat: number, lon: number): Promise<Post[]> {
-    const response = await this.get("forum/nearby", {
+    const response = await this.get('forum/nearby', {
       page: page.toString(),
       lat: lat.toString(),
       lon: lon.toString(),
     });
 
     if (!response.ok) {
-      throw new Error("Erro ao buscar postagens");
+      throw new Error('Erro ao buscar postagens');
     }
 
     const data = await response.json();
     return data as Post[];
   }
 }
-
-export default new ApiService();
