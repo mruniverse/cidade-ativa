@@ -22,7 +22,7 @@ export default function Index() {
   useEffect(() => {
     api.get('api/categories').then(async response => {
       const data = (await response.json()) as any[];
-      setCategories(data.map(item => ({ title: item.name, id: item.id })));
+      setCategories(data?.map(item => ({ title: item.name, id: item.id })));
     });
   }, [categories.length]);
 
