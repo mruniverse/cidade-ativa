@@ -21,7 +21,7 @@ export default function Index() {
     setTakenPhotoUri(photoUri);
     setIsCameraVisible(false);
     setIsNewPostModalVisible(true);
-    console.log('Photo taken with URI:', photoUri);
+    console.debug('Photo taken with URI:', photoUri);
   }
 
   function handleSavePost(postData: any) {
@@ -39,6 +39,7 @@ export default function Index() {
         style={{
           ...styles.buttonContainer,
           borderRadius: theme.roundness,
+          backgroundColor: theme.colors.primary,
         }}
       />
       <MapViewComponent onNewMarker={newMarker} />

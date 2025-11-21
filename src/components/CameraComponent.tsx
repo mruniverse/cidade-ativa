@@ -25,12 +25,10 @@ export default function CameraComponent(props: Readonly<CameraComponentProps>) {
   }, [props.isVisible]);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <Modal visible={true}>
         <Text style={styles.message}>
@@ -75,6 +73,7 @@ export default function CameraComponent(props: Readonly<CameraComponentProps>) {
       </TouchableOpacity>
       <Fab
         label=""
+        size="large"
         mode="elevated"
         onPress={() => takePicture()}
         style={styles.fab}
@@ -105,7 +104,6 @@ const styles = StyleSheet.create({
   },
   fab: {
     bottom: 96,
-    padding: 8,
     position: 'absolute',
     alignSelf: 'center',
     backgroundColor: '#ffffff',

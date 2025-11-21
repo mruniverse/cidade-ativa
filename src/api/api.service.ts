@@ -21,8 +21,6 @@ export class ApiService implements ApiServiceInterface {
 
   async get(endpoint: string, params?: Record<string, string>) {
     const queryString = params ? new URLSearchParams(params).toString() : '';
-    console.log(`GET Request URL: ${this.apiUrl}/${endpoint}/?${queryString}`);
-
     return fetch(`${this.apiUrl}/${endpoint}/?${queryString}`, {
       headers: {
         ...(await this.getAuthorizationHeader()),

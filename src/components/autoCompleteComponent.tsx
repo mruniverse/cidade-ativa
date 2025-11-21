@@ -20,7 +20,7 @@ export default function AutoCompleteComponent(
 ) {
   const theme = useTheme();
   const [selectedItem, setSelectedItem] = useState<{ id: string }>();
-  const [outlineStyle, setOutlineColor] = useState({
+  const [outlineStyle, setOutlineStyle] = useState({
     borderColor: 'rgba(38, 50, 56, 0.1)',
     borderWidth: 0.8,
   });
@@ -31,11 +31,11 @@ export default function AutoCompleteComponent(
   }
 
   function handleFocus() {
-    setOutlineColor({ borderColor: theme.colors.primary, borderWidth: 2 });
+    setOutlineStyle({ borderColor: theme.colors.primary, borderWidth: 2 });
   }
 
   function handleBlur() {
-    setOutlineColor({ borderColor: 'rgba(38, 50, 56, 0.1)', borderWidth: 0.8 });
+    setOutlineStyle({ borderColor: 'rgba(38, 50, 56, 0.1)', borderWidth: 0.8 });
   }
 
   return (

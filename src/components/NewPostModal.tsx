@@ -4,6 +4,8 @@ import { Button, Card, Modal } from 'react-native-paper';
 import { ApiService } from '../api/api.service';
 import defaultMargins from '../settings/margins';
 import defaultBorderRadius from '../settings/radius';
+import { Category } from '../types/category';
+import { getLocationData } from '../utils/location.utils';
 import AutoCompleteComponent from './autoCompleteComponent';
 import CustomTextInput from './TextInputComponent';
 
@@ -11,17 +13,23 @@ interface NewPostModalProps {
   isVisible?: boolean;
   handleToggleModal?: (state: boolean) => void;
   takenPhotoUri?: string;
-  onSavePost?: (postData: any) => void;
+  onSavePost?: (postData: {
+    category?: Category;
+    description: string;
+    photoUri?: string;
+  }) => void;
 }
 
 export default function NewPostModal(props: Readonly<NewPostModalProps>) {
   const api = new ApiService();
   const [modalVisible, setModalVisible] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    selectedItem?: Category;
+    description: string;
+  }>({
     selectedItem: undefined,
-    title: '',
     description: '',
   });
 
@@ -35,20 +43,23 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
 
   function fetchCategories() {
     api.get('api/categories').then(async response => {
-      const data = (await response.json()) as any[];
+      const data = (await response.json()) as Category[];
       if (data?.length > 0) {
-        setCategories(data.map(item => ({ title: item.name, id: item.id })));
+        setCategories(data);
       } else {
         console.log('No categories found.', data);
       }
     });
   }
 
-  function handleSelectItem(item: any) {
-    setFormData(prevData => ({
-      ...prevData,
-      selectedItem: item,
-    }));
+  function handleSelectItem(item: { id: string; title: string } | null) {
+    if (item) {
+      const selectedCategory = categories.find(cat => cat.id === item.id);
+      setFormData(prevData => ({
+        ...prevData,
+        selectedItem: selectedCategory,
+      }));
+    }
   }
 
   function handleModalDismiss() {
@@ -59,7 +70,7 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
   }
 
   async function handleSave() {
-    if (!formData.selectedItem || !formData.title) {
+    if (!formData.selectedItem) {
       console.log('Por favor, preencha todos os campos obrigatórios');
       return;
     }
@@ -70,16 +81,16 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
       const locationData = await getLocationData();
       const formDataToSend = new FormData();
 
-      formDataToSend.append('nome', formData.title);
+      formDataToSend.append('nome', formData.selectedItem.name);
       formDataToSend.append('conteudo', formData.description || '');
-      formDataToSend.append('category', (formData.selectedItem as any).id);
+      formDataToSend.append('category', formData.selectedItem.id);
       formDataToSend.append(
         'latitude',
-        Math.abs(locationData.latitude * 10000).toString()
+        (locationData.latitude * 10000).toFixed(0)
       );
       formDataToSend.append(
         'longitude',
-        Math.abs(locationData.longitude * 10000).toString()
+        (locationData.longitude * 10000).toFixed(0)
       );
 
       if (props.takenPhotoUri) {
@@ -103,22 +114,13 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
         });
       }
 
-      setFormData({ selectedItem: undefined, title: '', description: '' });
+      setFormData({ selectedItem: undefined, description: '' });
       handleModalDismiss();
     } catch (error) {
       console.error('Error creating post:', error);
     } finally {
       setLoading(false);
     }
-  }
-
-  async function getLocationData() {
-    const Location = await import('expo-location');
-    const location = await Location.getCurrentPositionAsync({});
-    return {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
   }
 
   return (
@@ -142,14 +144,7 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
             placeholder="Selecione o tipo de problema"
             handleSelectItem={handleSelectItem}
             selectedItem={formData.selectedItem}
-            dataSet={categories}
-          />
-          <CustomTextInput
-            placeholder="Título da ocorrência"
-            value={formData.title}
-            onChangeText={text =>
-              setFormData(prev => ({ ...prev, title: text }))
-            }
+            dataSet={categories.map(cat => ({ id: cat.id, title: cat.name }))}
           />
           <CustomTextInput
             placeholder="Descreva o problema"
