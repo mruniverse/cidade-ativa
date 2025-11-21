@@ -11,7 +11,11 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import defaultPositions from '../settings/positions';
 import MarkerComponent, { MarkerComponentProps } from './MarkerComponent';
 
-export default function MapViewComponent(props: MapViewProps) {
+interface CustomMapViewProps extends MapViewProps {
+  onNewMarker?: any;
+}
+
+export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
   const theme = useTheme();
   const mapScale = 4;
   const mapRef = useRef<MapView | null>(null);
@@ -42,6 +46,12 @@ export default function MapViewComponent(props: MapViewProps) {
     ]);
   }, []);
 
+  useEffect(() => {
+    if (props.onNewMarker) {
+      addMarkerAtUserLocation(props.onNewMarker);
+    }
+  }, [props.onNewMarker]);
+
   function setUserCurrentLocationOnMap() {
     Location.getCurrentPositionAsync({}).then(location => {
       if (location) {
@@ -53,6 +63,24 @@ export default function MapViewComponent(props: MapViewProps) {
         });
       }
     });
+  }
+
+  async function addMarkerAtUserLocation(postData: any) {
+    const location = await Location.getCurrentPositionAsync({});
+    if (location) {
+      const newMarker: MarkerComponentProps = {
+        id: `post_${Date.now()}`,
+        coordinate: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
+        title: postData.category?.title || 'Nova Ocorrência',
+        description: postData.description,
+        pinColor: theme.colors.primary,
+      };
+
+      setMarkers(prev => [...prev, newMarker]);
+    }
   }
 
   function handleMapPress(event: MapPressEvent) {
