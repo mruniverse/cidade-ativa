@@ -1,7 +1,8 @@
 import SecureStoreService from '../storage/secureStore.service';
+import { Post } from '../types/post';
 import ApiServiceInterface from './api.interface';
 
-export default class ApiService implements ApiServiceInterface {
+export class ApiService implements ApiServiceInterface {
   private readonly apiUrl = process.env.EXPO_PUBLIC_API_URL;
   private readonly secureStoreService = new SecureStoreService();
   private readonly shouldAuthenticate: boolean;
@@ -19,10 +20,9 @@ export default class ApiService implements ApiServiceInterface {
   }
 
   async get(endpoint: string, params?: Record<string, string>) {
-    console.log(
-      `GET Request URL: ${this.apiUrl}/${endpoint}/?${new URLSearchParams(params).toString()}`
-    );
     const queryString = params ? new URLSearchParams(params).toString() : '';
+    console.log(`GET Request URL: ${this.apiUrl}/${endpoint}/?${queryString}`);
+
     return fetch(`${this.apiUrl}/${endpoint}/?${queryString}`, {
       headers: {
         ...(await this.getAuthorizationHeader()),
@@ -64,5 +64,20 @@ export default class ApiService implements ApiServiceInterface {
       method: 'DELETE',
       headers: { ...(await this.getAuthorizationHeader()) },
     });
+  }
+
+  async getPosts(page: number, lat: number, lon: number): Promise<Post[]> {
+    const response = await this.get('postagens', {
+      page: page.toString(),
+      lat: lat.toString(),
+      lon: lon.toString(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar postagens');
+    }
+
+    const data = await response.json();
+    return data as Post[];
   }
 }

@@ -9,7 +9,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import ApiService from '../api/api.service';
+import { ApiService } from '../api/api.service';
 import SecureStoreService from '../storage/secureStore.service';
 import { User } from '../types/user';
 

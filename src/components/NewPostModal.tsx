@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Card, Modal } from 'react-native-paper';
-import ApiService from '../api/api.service';
+import { ApiService } from '../api/api.service';
 import defaultMargins from '../settings/margins';
 import defaultBorderRadius from '../settings/radius';
 import AutoCompleteComponent from './autoCompleteComponent';
