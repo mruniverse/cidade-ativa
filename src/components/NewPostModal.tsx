@@ -18,8 +18,10 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
   const api = new ApiService();
   const [modalVisible, setModalVisible] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     selectedItem: undefined,
+    title: '',
     description: '',
   });
 
@@ -57,17 +59,66 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
   }
 
   async function handleSave() {
-    const postData = {
-      category: formData.selectedItem,
-      description: formData.description,
-      photoUri: props.takenPhotoUri,
-    };
-
-    if (props.onSavePost) {
-      props.onSavePost(postData);
+    if (!formData.selectedItem || !formData.title) {
+      console.log('Por favor, preencha todos os campos obrigatórios');
+      return;
     }
 
-    setFormData({ selectedItem: undefined, description: '' });
+    setLoading(true);
+
+    try {
+      const locationData = await getLocationData();
+      const formDataToSend = new FormData();
+
+      formDataToSend.append('nome', formData.title);
+      formDataToSend.append('conteudo', formData.description || '');
+      formDataToSend.append('category', (formData.selectedItem as any).id);
+      formDataToSend.append(
+        'latitude',
+        Math.abs(locationData.latitude * 10000).toString()
+      );
+      formDataToSend.append(
+        'longitude',
+        Math.abs(locationData.longitude * 10000).toString()
+      );
+
+      if (props.takenPhotoUri) {
+        const imageFile = {
+          uri: props.takenPhotoUri,
+          type: 'image/jpeg',
+          name: 'photo.jpg',
+        } as any;
+        formDataToSend.append('imagem', imageFile);
+      }
+
+      console.log('Sending post data...');
+      const createdPost = await api.createPost(formDataToSend);
+      console.log('Post created successfully:', createdPost);
+
+      if (props.onSavePost) {
+        props.onSavePost({
+          category: formData.selectedItem,
+          description: formData.description,
+          photoUri: props.takenPhotoUri,
+        });
+      }
+
+      setFormData({ selectedItem: undefined, title: '', description: '' });
+      handleModalDismiss();
+    } catch (error) {
+      console.error('Error creating post:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function getLocationData() {
+    const Location = await import('expo-location');
+    const location = await Location.getCurrentPositionAsync({});
+    return {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
   }
 
   return (
@@ -94,16 +145,33 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
             dataSet={categories}
           />
           <CustomTextInput
+            placeholder="Título da ocorrência"
+            value={formData.title}
+            onChangeText={text =>
+              setFormData(prev => ({ ...prev, title: text }))
+            }
+          />
+          <CustomTextInput
             placeholder="Descreva o problema"
             multiline={true}
             numberOfLines={4}
+            value={formData.description}
+            onChangeText={text =>
+              setFormData(prev => ({ ...prev, description: text }))
+            }
           />
         </Card.Content>
         <Card.Actions style={{ marginTop: 16 }}>
-          <Button textColor="black" onPress={handleModalDismiss}>
+          <Button
+            textColor="black"
+            onPress={handleModalDismiss}
+            disabled={loading}
+          >
             Cancelar
           </Button>
-          <Button onPress={handleSave}>Salvar</Button>
+          <Button onPress={handleSave} loading={loading} disabled={loading}>
+            Salvar
+          </Button>
         </Card.Actions>
       </Card>
     </Modal>

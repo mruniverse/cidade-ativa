@@ -80,4 +80,21 @@ export class ApiService implements ApiServiceInterface {
     const data = await response.json();
     return data as Post[];
   }
+
+  async createPost(formData: FormData): Promise<Post> {
+    const response = await fetch(`${this.apiUrl}/postagens/criar/`, {
+      method: 'POST',
+      headers: {
+        ...(await this.getAuthorizationHeader()),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao criar postagem');
+    }
+
+    const data = await response.json();
+    return data as Post;
+  }
 }

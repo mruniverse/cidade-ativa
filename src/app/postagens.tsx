@@ -10,6 +10,7 @@ import { Text } from 'react-native-paper';
 
 import { ApiService } from '../api/api.service';
 import PostCard from '../components/PostCard';
+import defaultPositions from '../settings/positions';
 import { Post } from '../types/post';
 
 export default function Postagens() {
@@ -53,8 +54,14 @@ export default function Postagens() {
     try {
       const data = await api.getPosts(page, lat, lon);
       if (!data) throw new Error('Nenhuma postagem encontrada');
-      setPosts(prev => (page === 1 ? data : [...prev, ...data]));
-      setError(null);
+
+      setPosts(prev => {
+        if (page === 1) return data;
+        // Remove duplicates based on ID
+        const existingIds = new Set(prev.map(p => p.id));
+        const newPosts = data.filter(p => !existingIds.has(p.id));
+        return [...prev, ...newPosts];
+      });
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -64,11 +71,17 @@ export default function Postagens() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+        paddingBottom: defaultPositions.bottom,
+      }}
+    >
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
       <FlatList
-        data={posts}
-        keyExtractor={item => item.id}
+        data={[...posts].reverse()}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={({ item }) => <PostCard post={item} />}
         onEndReached={() => {
           if (!loading && coords) {

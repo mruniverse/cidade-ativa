@@ -25,7 +25,8 @@ export default function Index() {
   }
 
   function handleSavePost(postData: any) {
-    setNewMarker(postData);
+    const markerData = { ...postData, timestamp: Date.now() };
+    setNewMarker(markerData);
     setIsNewPostModalVisible(false);
     setTakenPhotoUri(null);
   }

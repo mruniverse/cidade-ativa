@@ -8,6 +8,7 @@ import MapView, {
 } from 'react-native-maps';
 import { useTheme } from 'react-native-paper';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import { ApiService } from '../api/api.service';
 import defaultPositions from '../settings/positions';
 import MarkerComponent, { MarkerComponentProps } from './MarkerComponent';
 
@@ -17,6 +18,7 @@ interface CustomMapViewProps extends MapViewProps {
 
 export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
   const theme = useTheme();
+  const api = new ApiService();
   const mapScale = 4;
   const mapRef = useRef<MapView | null>(null);
   const [markers, setMarkers] = useState<MarkerComponentProps[]>([]);
@@ -29,25 +31,47 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
 
   useEffect(() => {
     request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION).then(result => {
-      console.log('Location permission result:', result);
       setUserCurrentLocationOnMap();
+      loadPostsFromAPI();
     });
-
-    setMarkers([
-      {
-        id: 'initial_marker',
-        coordinate: {
-          latitude: -24.0438,
-          longitude: -52.3811,
-        },
-        title: 'Bem-vindo!',
-        description: 'Este é o ponto inicial do mapa.',
-      },
-    ]);
   }, []);
 
+  async function loadPostsFromAPI() {
+    try {
+      const location = await Location.getCurrentPositionAsync({});
+      const data = await api.getPosts(
+        1,
+        location.coords.latitude,
+        location.coords.longitude
+      );
+
+      if (data && data.length > 0) {
+        const postMarkers: MarkerComponentProps[] = data.map(post => {
+          const marker = {
+            id: `post_${post.id}`,
+            coordinate: {
+              latitude: -Math.abs(post.latitude / 10000),
+              longitude: -Math.abs(post.longitude / 10000),
+            },
+            title: post.nome,
+            description: post.conteudo,
+            pinColor: theme.colors.secondary,
+          };
+          console.log('Created marker:', marker);
+          return marker;
+        });
+
+        setMarkers(postMarkers);
+      } else {
+        console.log('No posts received or empty array');
+      }
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    }
+  }
+
   useEffect(() => {
-    if (props.onNewMarker) {
+    if (props.onNewMarker && props.onNewMarker !== null) {
       addMarkerAtUserLocation(props.onNewMarker);
     }
   }, [props.onNewMarker]);
@@ -86,7 +110,7 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
   function handleMapPress(event: MapPressEvent) {
     const coordinate = event.nativeEvent.coordinate;
     const newMarker: MarkerComponentProps = {
-      id: coordinate.latitude + '_' + coordinate.longitude,
+      id: `map_${Date.now()}_${coordinate.latitude}_${coordinate.longitude}`,
       coordinate: {
         latitude: coordinate.latitude,
         longitude: coordinate.longitude,
@@ -96,7 +120,7 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
       pinColor: theme.colors.primary,
     };
 
-    setMarkers([...markers, newMarker]);
+    setMarkers(prev => [...prev, newMarker]);
   }
 
   return (
