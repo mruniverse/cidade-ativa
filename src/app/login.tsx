@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useAuth } from "../providers/authProvider";
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useAuth } from '../providers/authProvider';
 
 type Props = {
   navigation: any;
@@ -8,17 +9,18 @@ type Props = {
 
 export default function LoginScreen({ navigation }: Props) {
   const { login } = useAuth();
-  const [username, setUsername] = useState("");
-  const [senha, setSenha] = useState("");
+  const [username, setUsername] = useState('');
+  const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleLogin() {
     setLoading(true);
     try {
       await login(username, senha);
-      navigation.replace("index");
+      router.navigate('/');
     } catch (err) {
-      alert("Erro ao fazer login. Verifique suas credenciais.");
+      console.error('LoginScreen Error:', err);
+      alert('Erro ao fazer login. Verifique suas credenciais.');
     } finally {
       setLoading(false);
     }
@@ -43,9 +45,12 @@ export default function LoginScreen({ navigation }: Props) {
         secureTextEntry
       />
 
-      <Button title={loading ? "Entrando..." : "Entrar"} onPress={handleLogin} />
+      <Button
+        title={loading ? 'Entrando...' : 'Entrar'}
+        onPress={handleLogin}
+      />
 
-      <Text style={styles.link} onPress={() => navigation.navigate("register")}>
+      <Text style={styles.link} onPress={() => navigation.navigate('register')}>
         Não tem conta? Registre-se
       </Text>
     </View>
@@ -55,24 +60,24 @@ export default function LoginScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     padding: 10,
     marginBottom: 15,
     borderRadius: 5,
   },
   link: {
     marginTop: 15,
-    textAlign: "center",
-    color: "blue",
+    textAlign: 'center',
+    color: 'blue',
   },
 });
