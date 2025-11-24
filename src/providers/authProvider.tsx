@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   Dispatch,
   ReactElement,
@@ -16,6 +16,9 @@ import { User } from '../types/user';
 type AuthContextType = {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
+  login: (username: string, senha: string) => Promise<void>;
+  register: (username: string, email: string, senha: string, senha2: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 type LoginResponse = {
@@ -35,35 +38,52 @@ function useAuth(): AuthContextType {
 
 const AuthProvider = (props: { children: ReactNode }): ReactElement => {
   const [user, setUser] = useState<User | null>(null);
+  const secureStorageService = new SecureStoreService();
 
   useEffect(() => {
-    if (user) return;
-    fetchGuestUser();
-  }, [user]);
+    restoreSession();
+  }, []);
 
-  async function fetchGuestUser() {
+  async function restoreSession() {
+    const token = await secureStorageService.getItem('authorization');
+    if (!token) return;
+    const apiService = new ApiService();
+    try {
+      const response = await apiService.get('accounts/dashboard');
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    } catch (err) {
+      console.error('Erro ao restaurar sessão:', err);
+    }
+  }
+
+  async function login(username: string, senha: string) {
     const apiService = new ApiService({ shouldAuthenticate: false });
-    const response = await apiService
-      .post('accounts/login', { username: 'guest', senha: 'guest' })
-      .then(async response => {
-        console.log('Login response status:', response.status);
-        return response.json() as Promise<LoginResponse>;
-      })
-      .catch(error => {
-        console.error('Error fetching guest user:', error);
-        return null;
-      });
-    if (!response) return;
-
-    console.log('Guest user logged in:', response.usuario);
-    const secureStorageService = new SecureStoreService();
-    secureStorageService.setItem('authorization', response.access);
+    const response = await apiService.login(username, senha);
+    await secureStorageService.setItem('authorization', response.access);
     setUser(response.usuario);
   }
 
-  const AuthContextValue = useMemo(() => ({ user, setUser }), [user, setUser]);
+  async function register(username: string, email: string, senha: string, senha2: string) {
+    const apiService = new ApiService({ shouldAuthenticate: false });
+    const response = await apiService.register(username, email, senha, senha2);
+    setUser(response);
+  }
+
+  async function logout() {
+    await secureStorageService.deleteItem('authorization');
+    setUser(null);
+  }
+
+  const AuthContextValue = useMemo(
+    () => ({ user, setUser, login, register, logout }),
+    [user, setUser]
+  );
 
   return <AuthContext.Provider {...props} value={AuthContextValue} />;
 };
 
 export { AuthProvider, useAuth };
+
