@@ -17,7 +17,7 @@ export default function BottomNavigationBar({
 }: Readonly<BottomTabBarProps>) {
   function getVisibleRoutes() {
     const visibleRoutes = state.routes.filter(r => {
-      const filter = ['_', '(', '+'];
+      const filter = ['_', '(', '+', 'login', 'register'];
       const name = String(r.name).toLowerCase();
 
       return !filter.some(f => name.startsWith(f));

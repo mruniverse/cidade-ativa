@@ -5,11 +5,12 @@ import { Post } from '../types/post';
 
 interface Props {
   post: Post;
+  style?: object;
 }
 
-export default function PostCard({ post }: Props) {
+export default function PostCard({ post, style }: Props) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, style]}>
       {post.imagem && (
         <Image source={{ uri: post.imagem }} style={styles.image} />
       )}

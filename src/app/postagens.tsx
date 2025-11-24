@@ -71,18 +71,21 @@ export default function Postagens() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#f5f5f5',
-        paddingBottom: defaultPositions.bottom,
-      }}
-    >
+    <View style={{ flex: 1 }}>
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
       <FlatList
         data={[...posts].reverse()}
         keyExtractor={(item, index) => `${item.id}-${index}`}
-        renderItem={({ item }) => <PostCard post={item} />}
+        renderItem={({ item, index }) =>
+          index === posts.length - 1 ? (
+            <PostCard
+              post={item}
+              style={{ marginBottom: defaultPositions.bottom }}
+            />
+          ) : (
+            <PostCard post={item} />
+          )
+        }
         onEndReached={() => {
           if (!loading && coords) {
             setPage(prev => prev + 1);
