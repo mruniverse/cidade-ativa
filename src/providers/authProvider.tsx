@@ -9,7 +9,9 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { TokenExpiredError, TokenInvalidError } from '../api/api.errors';
 import { ApiService } from '../api/api.service';
+import { AuthService } from '../api/auth.service';
 import SecureStoreService from '../storage/secureStore.service';
 import { User } from '../types/user';
 
@@ -17,13 +19,13 @@ type AuthContextType = {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
   login: (username: string, senha: string) => Promise<void>;
-  register: (username: string, email: string, senha: string, senha2: string) => Promise<void>;
-  logout: () => Promise<void>;
-};
-
-type LoginResponse = {
-  access: string;
-  usuario: User;
+  register: (
+    username: string,
+    email: string,
+    senha: string,
+    senha2: string
+  ) => Promise<void>;
+  logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,6 +41,7 @@ function useAuth(): AuthContextType {
 const AuthProvider = (props: { children: ReactNode }): ReactElement => {
   const [user, setUser] = useState<User | null>(null);
   const secureStorageService = new SecureStoreService();
+  const authService = new AuthService();
 
   useEffect(() => {
     restoreSession();
@@ -55,25 +58,35 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
         setUser(data.user);
       }
     } catch (err) {
-      console.error('Erro ao restaurar sessão:', err);
+      if (
+        err instanceof TokenExpiredError ||
+        err instanceof TokenInvalidError
+      ) {
+        console.log('Token invalid or expired, clearing session');
+        logout();
+      } else {
+        console.error('Erro ao restaurar sessão:', err);
+      }
     }
   }
 
   async function login(username: string, senha: string) {
-    const apiService = new ApiService({ shouldAuthenticate: false });
-    const response = await apiService.login(username, senha);
-    await secureStorageService.setItem('authorization', response.access);
+    const response = await authService.login(username, senha);
     setUser(response.usuario);
   }
 
-  async function register(username: string, email: string, senha: string, senha2: string) {
-    const apiService = new ApiService({ shouldAuthenticate: false });
-    const response = await apiService.register(username, email, senha, senha2);
+  async function register(
+    username: string,
+    email: string,
+    senha: string,
+    senha2: string
+  ) {
+    const response = await authService.register(username, email, senha, senha2);
     setUser(response);
   }
 
-  async function logout() {
-    await secureStorageService.deleteItem('authorization');
+  function logout() {
+    authService.logout();
     setUser(null);
   }
 
@@ -86,4 +99,3 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
 };
 
 export { AuthProvider, useAuth };
-
