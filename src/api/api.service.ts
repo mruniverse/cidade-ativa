@@ -18,48 +18,69 @@ export class ApiService implements ApiServiceInterface {
     }
   }
 
-  async get(endpoint: string, params?: Record<string, string>) {
-    const queryString = params ? new URLSearchParams(params).toString() : '';
-    return fetch(`${this.apiUrl}/${endpoint}/?${queryString}`, {
+  private async request(
+    endpoint: string,
+    options: RequestInit = {},
+    params?: Record<string, string>
+  ): Promise<Response> {
+    const queryString = params
+      ? `?${new URLSearchParams(params).toString()}`
+      : '';
+    const url = `${this.apiUrl}/${endpoint}/${queryString}`;
+
+    const response = await fetch(url, {
+      ...options,
       headers: {
         ...(await this.getAuthorizationHeader()),
+        ...options.headers,
       },
-    }).catch(error => {
-      console.error('API Service GET Error:', error);
-      throw error;
     });
+
+    if (
+      (response.status === 401 || response.status === 403) &&
+      this.shouldAuthenticate
+    ) {
+      const errorData = await response
+        .clone()
+        .json()
+        .catch(() => ({}));
+
+      const isTokenError =
+        errorData?.detail === 'Token expirado' ||
+        errorData?.detail === 'Token inválido';
+
+      if (isTokenError) {
+        console.log('Token invalid, retrying as guest...');
+        const guestService = new ApiService({ shouldAuthenticate: false });
+        return guestService.request(endpoint, options, params);
+      }
+    }
+
+    return response;
+  }
+
+  async get(endpoint: string, params?: Record<string, string>) {
+    return this.request(endpoint, {}, params);
   }
 
   async post(endpoint: string, body: any) {
-    console.log(`${this.apiUrl}/${endpoint}/`);
-    return fetch(`${this.apiUrl}/${endpoint}/`, {
+    const isFormData = body instanceof FormData;
+    return this.request(endpoint, {
       method: 'POST',
-      headers: {
-        ...(await this.getAuthorizationHeader()),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    }).catch(error => {
-      console.error('API Service POST Error:', error);
-      throw error;
+      headers: isFormData ? {} : { 'Content-Type': 'application/json' },
+      body: isFormData ? body : JSON.stringify(body),
     });
   }
 
   async put(endpoint: string, body: any) {
-    return fetch(`${this.apiUrl}/${endpoint}/`, {
+    return this.request(endpoint, {
       method: 'PUT',
-      headers: {
-        ...(await this.getAuthorizationHeader()),
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
   }
 
   async delete(endpoint: string) {
-    return fetch(`${this.apiUrl}/${endpoint}/`, {
-      method: 'DELETE',
-      headers: { ...(await this.getAuthorizationHeader()) },
-    });
+    return this.request(endpoint, { method: 'DELETE' });
   }
 }

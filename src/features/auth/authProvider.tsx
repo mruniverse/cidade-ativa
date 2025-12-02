@@ -44,6 +44,7 @@ function useAuth(): AuthContextType {
 const AuthProvider = (props: { children: ReactNode }): ReactElement => {
   const [user, setUser] = useState<User | null>(null);
   const secureStorageService = new SecureStoreService();
+  const authService = new AuthService();
 
   useEffect(() => {
     restoreSession();
@@ -60,14 +61,20 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
         setUser(data.user);
       }
     } catch (err) {
-      console.error('Erro ao restaurar sessão:', err);
+      if (
+        err instanceof TokenExpiredError ||
+        err instanceof TokenInvalidError
+      ) {
+        console.log('Token invalid or expired, clearing session');
+        logout();
+      } else {
+        console.error('Erro ao restaurar sessão:', err);
+      }
     }
   }
 
   async function login(username: string, senha: string) {
-    const apiService = new ApiService({ shouldAuthenticate: false });
-    const response = await apiService.login(username, senha);
-    await secureStorageService.setItem('authorization', response.access);
+    const response = await authService.login(username, senha);
     setUser(response.usuario);
   }
 
@@ -82,8 +89,8 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
     setUser(response);
   }
 
-  async function logout() {
-    await secureStorageService.deleteItem('authorization');
+  function logout() {
+    authService.logout();
     setUser(null);
   }
 
