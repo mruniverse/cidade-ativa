@@ -19,7 +19,7 @@ export const lightTheme: MD3Theme = {
     primaryContainer: '#FFE07C',
     secondary: '#FFF2B4',
     secondaryContainer: ' #FFFADE',
-    background: '#e7e0ec',
+    background: '#d5d5d5',
   },
 };
 

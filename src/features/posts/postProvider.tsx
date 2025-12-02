@@ -17,9 +17,11 @@ interface PostContextType {
   loadPosts: (page: number, lat: number, lon: number) => Promise<void>;
   refreshPosts: (lat: number, lon: number) => Promise<void>;
   getPostById: (id: string) => Promise<Post | null>;
+  loadPostComments: (postId: string) => Promise<void>;
   createPost: (formData: FormData) => Promise<Post>;
   updatePost: (id: string, data: Partial<Post>) => Promise<Post>;
   deletePost: (id: string) => Promise<void>;
+  addComment: (postId: string, content: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -41,7 +43,7 @@ interface PostProviderProps {
 export function PostProvider({
   children,
   postService,
-}: PostProviderProps): ReactElement {
+}: Readonly<PostProviderProps>): ReactElement {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +99,22 @@ export function PostProvider({
       }
     },
     [posts, service]
+  );
+
+  const loadPostComments = useCallback(
+    async (postId: string): Promise<void> => {
+      try {
+        const postWithComments = await service.getPostById(postId);
+        setPosts(prev =>
+          prev.map(p => (p.id === postId ? postWithComments : p))
+        );
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : 'Erro ao carregar comentários';
+        setError(message);
+      }
+    },
+    [service]
   );
 
   const createPost = useCallback(
@@ -156,6 +174,23 @@ export function PostProvider({
     setError(null);
   }, []);
 
+  const addComment = useCallback(
+    async (postId: string, content: string): Promise<void> => {
+      try {
+        await service.createComment({ postagem: postId, conteudo: content });
+        // Refresh the post to get updated comments
+        const updatedPost = await service.getPostById(postId);
+        setPosts(prev => prev.map(p => (p.id === postId ? updatedPost : p)));
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : 'Erro ao adicionar comentário';
+        setError(message);
+        throw err;
+      }
+    },
+    [service]
+  );
+
   const value = useMemo(
     () => ({
       posts,
@@ -164,9 +199,11 @@ export function PostProvider({
       loadPosts,
       refreshPosts,
       getPostById,
+      loadPostComments,
       createPost,
       updatePost,
       deletePost,
+      addComment,
       clearError,
     }),
     [
@@ -176,9 +213,11 @@ export function PostProvider({
       loadPosts,
       refreshPosts,
       getPostById,
+      loadPostComments,
       createPost,
       updatePost,
       deletePost,
+      addComment,
       clearError,
     ]
   );

@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import {
@@ -13,9 +14,20 @@ import { usePost } from '../features/posts/postProvider';
 import defaultPositions from '../settings/positions';
 
 export default function Postagens() {
-  const { posts, loading, error, loadPosts, refreshPosts } = usePost();
+  const {
+    posts,
+    loading,
+    error,
+    loadPosts,
+    refreshPosts,
+    addComment,
+    loadPostComments,
+  } = usePost();
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingCommentsFor, setLoadingCommentsFor] = useState<string | null>(
+    null
+  );
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     null
   );
@@ -59,22 +71,44 @@ export default function Postagens() {
     setRefreshing(false);
   };
 
+  const handleSubmitComment = async (postId: string, content: string) => {
+    await addComment(postId, content);
+  };
+
+  const handleLoadComments = async (postId: string) => {
+    setLoadingCommentsFor(postId);
+    try {
+      await loadPostComments(postId);
+    } finally {
+      setLoadingCommentsFor(null);
+    }
+  };
+
+  const reversedPosts = [...posts].reverse();
+
   return (
     <View style={{ flex: 1 }}>
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
       <FlatList
-        data={[...posts].reverse()}
+        data={reversedPosts}
         keyExtractor={(item, index) => `${item.id}-${index}`}
-        renderItem={({ item, index }) =>
-          index === posts.length - 1 ? (
+        renderItem={({ item, index }) => {
+          const isFirst = index === 0;
+          const isLast = index === reversedPosts.length - 1;
+
+          return (
             <PostCardComponent
               post={item}
-              style={{ marginBottom: defaultPositions.bottom }}
+              style={{
+                ...(isFirst && { marginTop: Constants.statusBarHeight }),
+                ...(isLast && { marginBottom: defaultPositions.bottom }),
+              }}
+              onSubmitComment={handleSubmitComment}
+              onLoadComments={handleLoadComments}
+              isLoadingComments={loadingCommentsFor === item.id}
             />
-          ) : (
-            <PostCardComponent post={item} />
-          )
-        }
+          );
+        }}
         onEndReached={handleLoadMore}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />

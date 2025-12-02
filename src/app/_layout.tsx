@@ -1,7 +1,7 @@
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
+import Constants from 'expo-constants';
 import { Tabs } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, View } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 import { PaperProvider } from 'react-native-paper';
 import BottomNavigationBar from '../components/BottomNavigationBar';
@@ -18,8 +18,23 @@ export default function RootLayout() {
       <PostProvider>
         <PaperProvider theme={theme} settings={settings}>
           <AutocompleteDropdownContextProvider>
-            <StatusBar style="auto" backgroundColor="rgba(0, 0, 0, 0.2)" />
-            <Tabs tabBar={BottomNavigationBar}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: Constants.statusBarHeight,
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                zIndex: 100,
+              }}
+            />
+            <Tabs
+              tabBar={BottomNavigationBar}
+              screenOptions={{
+                sceneStyle: { backgroundColor: 'transparent' },
+              }}
+            >
               <Tabs.Screen
                 name="index"
                 options={{
@@ -43,6 +58,7 @@ export default function RootLayout() {
                 name="postagens"
                 options={{
                   title: 'Postagens',
+                  headerShown: false,
                   tabBarIcon: ({ size, focused }) => (
                     <FontAwesome6
                       style={{ marginTop: -5 }}
