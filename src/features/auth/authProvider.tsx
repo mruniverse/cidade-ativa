@@ -9,7 +9,9 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { TokenExpiredError, TokenInvalidError } from '../../api/api.errors';
 import { ApiService } from '../../api/api.service';
+import { AuthService } from '../../api/auth.service';
 import SecureStoreService from '../../storage/secureStore.service';
 import { User } from './user.types';
 
@@ -23,7 +25,7 @@ type AuthContextType = {
     senha: string,
     senha2: string
   ) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
 };
 
 type LoginResponse = {
@@ -84,8 +86,7 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
     senha: string,
     senha2: string
   ) {
-    const apiService = new ApiService({ shouldAuthenticate: false });
-    const response = await apiService.register(username, email, senha, senha2);
+    const response = await authService.register(username, email, senha, senha2);
     setUser(response);
   }
 

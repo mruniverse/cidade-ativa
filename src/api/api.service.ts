@@ -1,20 +1,65 @@
 import SecureStoreService from '../storage/secureStore.service';
 import ApiServiceInterface from './api.interface';
 
+const GUEST_CREDENTIALS = {
+  username: 'guest',
+  password: 'guest',
+};
+
 export class ApiService implements ApiServiceInterface {
   private readonly apiUrl = process.env.EXPO_PUBLIC_API_URL;
   private readonly secureStoreService = new SecureStoreService();
   private readonly shouldAuthenticate: boolean;
+  private static isLoggingInAsGuest = false;
 
   constructor(props?: { shouldAuthenticate: boolean }) {
     this.shouldAuthenticate = props?.shouldAuthenticate ?? true;
   }
 
-  private async getAuthorizationHeader() {
+  private async getAuthorizationHeader(): Promise<Record<string, string>> {
     if (this.shouldAuthenticate) {
-      return {
-        Authorization: `Bearer ${await this.secureStoreService.getItem('authorization')}`,
-      };
+      const token = await this.secureStoreService.getItem('authorization');
+      if (token) {
+        return {
+          Authorization: `Bearer ${token}`,
+        };
+      }
+    }
+    return {};
+  }
+
+  private async loginAsGuest(): Promise<string | null> {
+    if (ApiService.isLoggingInAsGuest) {
+      return null;
+    }
+
+    ApiService.isLoggingInAsGuest = true;
+    console.log('Logging in as guest...');
+
+    try {
+      const response = await fetch(`${this.apiUrl}/accounts/login/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: GUEST_CREDENTIALS.username,
+          senha: GUEST_CREDENTIALS.password,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to login as guest');
+        return null;
+      }
+
+      const data = await response.json();
+      await this.secureStoreService.setItem('authorization', data.access);
+      console.log('Guest login successful');
+      return data.access;
+    } catch (error) {
+      console.error('Error logging in as guest:', error);
+      return null;
+    } finally {
+      ApiService.isLoggingInAsGuest = false;
     }
   }
 
@@ -45,14 +90,19 @@ export class ApiService implements ApiServiceInterface {
         .json()
         .catch(() => ({}));
 
-      const isTokenError =
+      const isAuthError =
         errorData?.detail === 'Token expirado' ||
-        errorData?.detail === 'Token inválido';
+        errorData?.detail === 'Token inválido' ||
+        errorData?.detail ===
+          'As credenciais de autenticação não foram fornecidas.';
 
-      if (isTokenError) {
-        console.log('Token invalid, retrying as guest...');
-        const guestService = new ApiService({ shouldAuthenticate: false });
-        return guestService.request(endpoint, options, params);
+      if (isAuthError) {
+        console.log('Auth error, logging in as guest and retrying...');
+        const guestToken = await this.loginAsGuest();
+        if (guestToken) {
+          // Retry the request with the new guest token
+          return this.request(endpoint, options, params);
+        }
       }
     }
 
