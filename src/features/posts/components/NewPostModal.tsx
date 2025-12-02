@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Card, Modal } from 'react-native-paper';
-import { ApiService } from '../api/api.service';
-import { usePost } from '../providers/postProvider';
-import defaultMargins from '../settings/margins';
-import defaultBorderRadius from '../settings/radius';
-import { Category } from '../types/category';
-import { getLocationData } from '../utils/location.utils';
-import AutoCompleteComponent from './autoCompleteComponent';
-import CustomTextInput from './TextInputComponent';
+import { ApiService } from '../../../api/api.service';
+import AutoCompleteComponent from '../../../components/autoCompleteComponent';
+import CustomTextInput from '../../../components/TextInputComponent';
+import defaultMargins from '../../../settings/margins';
+import defaultBorderRadius from '../../../settings/radius';
+import { getLocationData } from '../../../utils/location.utils';
+import { Category } from '../../categories/category.types';
+import { usePost } from '../postProvider';
 
 interface NewPostModalProps {
   isVisible?: boolean;

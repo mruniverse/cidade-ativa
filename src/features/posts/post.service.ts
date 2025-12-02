@@ -1,5 +1,5 @@
-import { Post } from '../types/post';
-import { ApiService } from './api.service';
+import { ApiService } from '../../api/api.service';
+import { Post } from './post.types';
 
 export class PostService {
   private readonly apiService: ApiService;

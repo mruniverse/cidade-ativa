@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   ReactElement,
   ReactNode,
@@ -7,8 +7,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { PostService } from '../api/post.service';
-import { Post } from '../types/post';
+import { PostService } from './post.service';
+import { Post } from './post.types';
 
 interface PostContextType {
   posts: Post[];

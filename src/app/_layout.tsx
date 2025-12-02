@@ -5,8 +5,8 @@ import { useColorScheme } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 import { PaperProvider } from 'react-native-paper';
 import BottomNavigationBar from '../components/BottomNavigationBar';
-import { AuthProvider } from '../providers/authProvider';
-import { PostProvider } from '../providers/postProvider';
+import { AuthProvider } from '../features/auth/authProvider';
+import { PostProvider } from '../features/posts/postProvider';
 import { darkTheme, lightTheme, settings } from '../settings/theme';
 
 export default function RootLayout() {

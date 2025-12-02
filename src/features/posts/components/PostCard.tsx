@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-import { Post } from '../types/post';
+import { Post } from '../post.types';
 
 interface PostCardComponentProps {
   post: Post;

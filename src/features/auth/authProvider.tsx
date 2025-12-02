@@ -9,15 +9,20 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { ApiService } from '../api/api.service';
-import SecureStoreService from '../storage/secureStore.service';
-import { User } from '../types/user';
+import { ApiService } from '../../api/api.service';
+import SecureStoreService from '../../storage/secureStore.service';
+import { User } from './user.types';
 
 type AuthContextType = {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
   login: (username: string, senha: string) => Promise<void>;
-  register: (username: string, email: string, senha: string, senha2: string) => Promise<void>;
+  register: (
+    username: string,
+    email: string,
+    senha: string,
+    senha2: string
+  ) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -66,7 +71,12 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
     setUser(response.usuario);
   }
 
-  async function register(username: string, email: string, senha: string, senha2: string) {
+  async function register(
+    username: string,
+    email: string,
+    senha: string,
+    senha2: string
+  ) {
     const apiService = new ApiService({ shouldAuthenticate: false });
     const response = await apiService.register(username, email, senha, senha2);
     setUser(response);
@@ -86,4 +96,3 @@ const AuthProvider = (props: { children: ReactNode }): ReactElement => {
 };
 
 export { AuthProvider, useAuth };
-

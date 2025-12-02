@@ -8,7 +8,7 @@ import MapView, {
 } from 'react-native-maps';
 import { useTheme } from 'react-native-paper';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { ApiService } from '../api/api.service';
+import { PostService } from '../features/posts/post.service';
 import defaultPositions from '../settings/positions';
 import MarkerComponent, { MarkerComponentProps } from './MarkerComponent';
 
@@ -18,7 +18,7 @@ interface CustomMapViewProps extends MapViewProps {
 
 export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
   const theme = useTheme();
-  const api = new ApiService();
+  const postService = new PostService();
   const mapScale = 4;
   const mapRef = useRef<MapView | null>(null);
   const [markers, setMarkers] = useState<MarkerComponentProps[]>([]);
@@ -39,7 +39,7 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
   async function loadPostsFromAPI() {
     try {
       const location = await Location.getCurrentPositionAsync({});
-      const data = await api.getPosts(
+      const data = await postService.getPosts(
         1,
         location.coords.latitude,
         location.coords.longitude

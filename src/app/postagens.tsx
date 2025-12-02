@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-paper';
 
-import PostCardComponent from '../components/PostCardComponent';
-import { usePost } from '../providers/postProvider';
+import PostCardComponent from '../features/posts/components/PostCard';
+import { usePost } from '../features/posts/postProvider';
 import defaultPositions from '../settings/positions';
 
 export default function Postagens() {
