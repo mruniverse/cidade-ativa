@@ -7,7 +7,9 @@ import {
   View,
 } from 'react-native';
 import {
+  Avatar,
   Button,
+  Divider,
   HelperText,
   Text,
   TextInput,
@@ -184,22 +186,114 @@ export default function Perfil() {
   }
 
   return (
-    <View
+    <ScrollView
       style={[
         styles.profileContainer,
         { backgroundColor: theme.colors.background },
       ]}
+      contentContainerStyle={styles.profileContent}
     >
-      <Text variant="headlineMedium" style={styles.welcomeText}>
-        Bem-vindo, {user.username}
-      </Text>
-      <Text variant="bodyLarge" style={styles.emailText}>
-        Email: {user.email}
-      </Text>
-      <Button mode="outlined" onPress={logout} style={styles.logoutButton}>
-        Sair
+      {/* Avatar Section */}
+      <View style={styles.avatarSection}>
+        <Avatar.Text
+          size={100}
+          label={user.username.substring(0, 2).toUpperCase()}
+          style={[styles.avatar, { backgroundColor: theme.colors.primary }]}
+          labelStyle={{ color: theme.colors.onPrimary }}
+        />
+        <Text variant="headlineMedium" style={styles.usernameText}>
+          {user.username}
+        </Text>
+        {user.is_staff && (
+          <View
+            style={[
+              styles.staffBadge,
+              { backgroundColor: theme.colors.primaryContainer },
+            ]}
+          >
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.onPrimaryContainer }}
+            >
+              Administrador
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* User Info Section */}
+      <View
+        style={[styles.infoSection, { backgroundColor: theme.colors.surface }]}
+      >
+        <Text
+          variant="titleSmall"
+          style={[styles.sectionTitle, { color: theme.colors.primary }]}
+        >
+          INFORMAÇÕES DO PERFIL
+        </Text>
+
+        <View style={styles.infoRow}>
+          <Text
+            variant="labelMedium"
+            style={[styles.infoLabel, { color: theme.colors.onSurfaceVariant }]}
+          >
+            Email
+          </Text>
+          <Text
+            variant="bodyLarge"
+            style={[styles.infoValue, { color: theme.colors.onSurface }]}
+          >
+            {user.email}
+          </Text>
+        </View>
+        <Divider />
+
+        <View style={styles.infoRow}>
+          <Text
+            variant="labelMedium"
+            style={[styles.infoLabel, { color: theme.colors.onSurfaceVariant }]}
+          >
+            Usuário
+          </Text>
+          <Text
+            variant="bodyLarge"
+            style={[styles.infoValue, { color: theme.colors.onSurface }]}
+          >
+            {user.username}
+          </Text>
+        </View>
+        <Divider />
+
+        <View style={styles.infoRow}>
+          <Text
+            variant="labelMedium"
+            style={[styles.infoLabel, { color: theme.colors.onSurfaceVariant }]}
+          >
+            Membro desde
+          </Text>
+          <Text
+            variant="bodyLarge"
+            style={[styles.infoValue, { color: theme.colors.onSurface }]}
+          >
+            {new Date(user.criado_em).toLocaleDateString('pt-BR', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </Text>
+        </View>
+      </View>
+
+      {/* Logout Button */}
+      <Button
+        mode="contained-tonal"
+        onPress={logout}
+        style={styles.logoutButton}
+        textColor={theme.colors.error}
+      >
+        Sair da conta
       </Button>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -238,18 +332,53 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
   },
-  welcomeText: {
+  profileContent: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  avatarSection: {
+    alignItems: 'center',
+    marginBottom: 24,
+    marginTop: 16,
+  },
+  avatar: {
+    marginBottom: 16,
+  },
+  usernameText: {
+    fontWeight: 'bold',
     marginBottom: 8,
   },
-  emailText: {
+  staffBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  infoSection: {
+    width: '100%',
+    borderRadius: 12,
     marginBottom: 24,
-    opacity: 0.7,
+    paddingVertical: 8,
+  },
+  sectionTitle: {
+    fontWeight: '600',
+    letterSpacing: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  infoRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  infoLabel: {
+    marginBottom: 4,
+  },
+  infoValue: {
+    fontWeight: '500',
   },
   logoutButton: {
-    marginTop: 16,
+    width: '100%',
+    marginTop: 8,
   },
 });
