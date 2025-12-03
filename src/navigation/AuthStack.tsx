@@ -3,7 +3,12 @@ import React from "react";
 import LoginScreen from "../app/login";
 import RegisterScreen from "../app/register";
 
-const Stack = createStackNavigator();
+export type AuthStackParamList = {
+  login: undefined;
+  register: undefined;
+};
+
+const Stack = createStackNavigator<AuthStackParamList>();
 
 export default function AuthStack() {
   return (

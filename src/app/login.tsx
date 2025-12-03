@@ -1,26 +1,32 @@
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useAuth } from '../providers/authProvider';
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, Card, Text } from "react-native-paper";
+import TextInputComponent from "../components/TextInputComponent";
+import { useAuth } from "../features/auth/authProvider";
+import { RootStackParamList } from "../navigation/RootNavigator";
+import margins from "../settings/margins";
+import radius from "../settings/radius";
 
-type Props = {
-  navigation: any;
-};
+type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-export default function LoginScreen({ navigation }: Props) {
+export default function LoginScreen() {
   const { login } = useAuth();
-  const [username, setUsername] = useState('');
-  const [senha, setSenha] = useState('');
+  const navigation = useNavigation<RootNavigationProp>();
+
+  const [username, setUsername] = useState("");
+  const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleLogin() {
     setLoading(true);
     try {
       await login(username, senha);
-      router.navigate('/');
+      navigation.navigate("App", { screen: "perfil" });
     } catch (err) {
-      console.error('LoginScreen Error:', err);
-      alert('Erro ao fazer login. Verifique suas credenciais.');
+      console.error("LoginScreen Error:", err);
+      alert("Erro ao fazer login. Verifique suas credenciais.");
     } finally {
       setLoading(false);
     }
@@ -28,31 +34,40 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text style={styles.title}>Login</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Usuário"
-        value={username}
-        onChangeText={setUsername}
-      />
+          <TextInputComponent
+            label="Usuário"
+            value={username}
+            onChangeText={setUsername}
+          />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-      />
+          <TextInputComponent
+            label="Senha"
+            value={senha}
+            onChangeText={setSenha}
+            secureTextEntry
+          />
 
-      <Button
-        title={loading ? 'Entrando...' : 'Entrar'}
-        onPress={handleLogin}
-      />
+          <Button
+            mode="contained"
+            onPress={handleLogin}
+            loading={loading}
+            style={styles.button}
+          >
+            Entrar
+          </Button>
 
-      <Text style={styles.link} onPress={() => navigation.navigate('register')}>
-        Não tem conta? Registre-se
-      </Text>
+          <Button
+            mode="text"
+            onPress={() => navigation.navigate("Auth", { screen: "register" })}
+          >
+            Não tem conta? Registre-se
+          </Button>
+        </Card.Content>
+      </Card>
     </View>
   );
 }
@@ -60,24 +75,19 @@ export default function LoginScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 20,
+    justifyContent: "center",
+    padding: margins.large,
+  },
+  card: {
+    borderRadius: radius,
+    padding: margins.medium,
   },
   title: {
     fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
+    marginBottom: margins.medium,
+    textAlign: "center",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-  },
-  link: {
-    marginTop: 15,
-    textAlign: 'center',
-    color: 'blue',
+  button: {
+    marginTop: margins.medium,
   },
 });
