@@ -320,10 +320,6 @@ const styles = StyleSheet.create({
     color: '#222',
     fontWeight: '500',
     paddingTop: 8,
-    paddingBottom: 10,
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   captionUsername: {
     fontWeight: '600',
