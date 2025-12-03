@@ -18,7 +18,7 @@ export const lightTheme: MD3Theme = {
     primary: '#FCBD00',
     primaryContainer: '#FFE07C',
     secondary: '#FFF2B4',
-    secondaryContainer: ' #FFFADE',
+    secondaryContainer: '#FFFADE',
     background: '#d5d5d5',
   },
 };
@@ -31,14 +31,13 @@ export const darkTheme: MD3Theme = {
     primary: '#FCBD00',
     primaryContainer: '#FFE07C',
     secondary: '#FFF2B4',
-    secondaryContainer: ' #FFFADE',
+    secondaryContainer: '#FFFADE',
     background: '#121015',
   },
 };
 
 function getCustomIconElement(props: IconProps) {
   const currentStyles = ['regular', 'solid', 'brand'];
-
   const extractedType = props.name.split('-').pop() ?? '';
   const iconStyle = currentStyles.includes(extractedType)
     ? extractedType
@@ -52,4 +51,9 @@ function getCustomIconElement(props: IconProps) {
 
 export const settings: Settings = {
   icon: props => getCustomIconElement(props),
+};
+
+export const themes = {
+  light: lightTheme,
+  dark: darkTheme,
 };
