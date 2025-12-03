@@ -12,7 +12,10 @@ export default function RootNavigator() {
   const isDarkMode = false;
 
   return (
-    <PaperProvider theme={isDarkMode ? darkTheme : lightTheme} settings={settings}>
+    <PaperProvider
+      theme={isDarkMode ? darkTheme : lightTheme}
+      settings={settings}
+    >
       <NavigationContainer>
         {user ? <AppStack /> : <AuthStack />}
       </NavigationContainer>

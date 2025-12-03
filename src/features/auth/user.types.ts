@@ -4,4 +4,5 @@ export type User = {
   email: string;
   criado_em: string;
   is_staff: boolean;
+  isGuest?: boolean;
 };
