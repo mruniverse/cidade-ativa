@@ -5,6 +5,8 @@ import { FlatList, RefreshControl, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 
 import PostCardComponent from '../features/posts/components/PostCard';
+import PostDetailModal from '../features/posts/components/PostDetailModal';
+import { Post } from '../features/posts/post.types';
 import { usePost } from '../features/posts/postProvider';
 import defaultPositions from '../settings/positions';
 
@@ -26,6 +28,7 @@ export default function Postagens() {
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     null
   );
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -98,6 +101,7 @@ export default function Postagens() {
                 ...(isFirst && { marginTop: Constants.statusBarHeight }),
                 ...(isLast && { marginBottom: defaultPositions.bottom }),
               }}
+              onImagePress={() => setSelectedPost(item)}
               onSubmitComment={handleSubmitComment}
               onLoadComments={handleLoadComments}
               isLoadingComments={loadingCommentsFor === item.id}
@@ -111,6 +115,12 @@ export default function Postagens() {
         ListFooterComponent={
           loading && !refreshing ? <ActivityIndicator size="large" /> : null
         }
+      />
+
+      <PostDetailModal
+        post={selectedPost}
+        visible={selectedPost !== null}
+        onClose={() => setSelectedPost(null)}
       />
     </View>
   );

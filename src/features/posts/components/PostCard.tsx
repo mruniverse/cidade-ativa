@@ -16,6 +16,7 @@ interface PostCardComponentProps {
   post: Post;
   style?: ViewStyle;
   onPress?: () => void;
+  onImagePress?: () => void;
   onSubmitComment?: (postId: string, content: string) => Promise<void>;
   onLoadComments?: (postId: string) => Promise<void>;
   comments?: Comment[];
@@ -26,6 +27,7 @@ export default function PostCardComponent({
   post,
   style,
   onPress,
+  onImagePress,
   onSubmitComment,
   onLoadComments,
   comments = [],
@@ -102,11 +104,13 @@ export default function PostCardComponent({
       </View>
 
       {post.imagem && (
-        <Image
-          source={{ uri: post.imagem }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        <TouchableOpacity onPress={onImagePress} activeOpacity={0.9}>
+          <Image
+            source={{ uri: post.imagem }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
       )}
 
       <View style={styles.content}>
