@@ -1,9 +1,10 @@
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { Alert, FlatList, RefreshControl, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 
+import { useAuth } from '../features/auth/authProvider';
 import PostCardComponent from '../features/posts/components/PostCard';
 import PostDetailModal from '../features/posts/components/PostDetailModal';
 import { Post } from '../features/posts/post.types';
@@ -11,12 +12,14 @@ import { usePost } from '../features/posts/postProvider';
 import defaultPositions from '../settings/positions';
 
 export default function Postagens() {
+  const { user } = useAuth();
   const {
     posts,
     loading,
     error,
     loadPosts,
     refreshPosts,
+    deletePost,
     addComment,
     loadPostComments,
   } = usePost();
@@ -82,6 +85,25 @@ export default function Postagens() {
     }
   };
 
+  const handleDeletePost = (postId: string) => {
+    Alert.alert(
+      'Excluir postagem',
+      'Tem certeza que deseja excluir esta postagem?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            deletePost(postId).catch(() => {
+              Alert.alert('Erro', 'Não foi possível excluir a postagem.');
+            });
+          },
+        },
+      ]
+    );
+  };
+
   const reversedPosts = [...posts].reverse();
 
   return (
@@ -101,6 +123,9 @@ export default function Postagens() {
                 ...(isFirst && { marginTop: Constants.statusBarHeight }),
                 ...(isLast && { marginBottom: defaultPositions.bottom }),
               }}
+              currentUserId={user?.id}
+              onViewPress={() => setSelectedPost(item)}
+              onDeletePress={() => handleDeletePost(item.id)}
               onImagePress={() => setSelectedPost(item)}
               onSubmitComment={handleSubmitComment}
               onLoadComments={handleLoadComments}

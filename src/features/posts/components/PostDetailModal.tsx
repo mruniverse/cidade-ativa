@@ -127,7 +127,6 @@ export default function PostDetailModal({
               <Text style={styles.description}>{post.conteudo}</Text>
             )}
 
-            <Text style={styles.sectionTitle}>Localização</Text>
             {streetAddress && (
               <View style={styles.addressRow}>
                 <Icon name="location-dot" size={14} color="#666" />

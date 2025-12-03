@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Menu, Text, useTheme } from 'react-native-paper';
 import Icon from '../../../components/IconComponent';
 import { Comment, Post } from '../post.types';
 import { formatRelativeTime, formatViewCommentsText } from '../post.utils';
@@ -15,7 +15,9 @@ import { formatRelativeTime, formatViewCommentsText } from '../post.utils';
 interface PostCardComponentProps {
   post: Post;
   style?: ViewStyle;
-  onPress?: () => void;
+  currentUserId?: string | null;
+  onViewPress?: () => void;
+  onDeletePress?: () => void;
   onImagePress?: () => void;
   onSubmitComment?: (postId: string, content: string) => Promise<void>;
   onLoadComments?: (postId: string) => Promise<void>;
@@ -26,7 +28,9 @@ interface PostCardComponentProps {
 export default function PostCardComponent({
   post,
   style,
-  onPress,
+  currentUserId,
+  onViewPress,
+  onDeletePress,
   onImagePress,
   onSubmitComment,
   onLoadComments,
@@ -37,11 +41,15 @@ export default function PostCardComponent({
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   const relativeDate = formatRelativeTime(post.criado_em);
   const isGuestUser =
     !post.autor?.username ||
     post.autor.username.toLowerCase() === 'guest' ||
     post.autor.username === 'Anônimo';
+
+  const isCurrentUserPost = currentUserId && post.autor?.id === currentUserId;
+  const canDelete = isCurrentUserPost && !isGuestUser;
 
   const handleLoadComments = async () => {
     if (showComments) {
@@ -97,9 +105,36 @@ export default function PostCardComponent({
         </View>
         <View style={styles.headerRight}>
           <Text style={styles.relativeDate}>{relativeDate}</Text>
-          <TouchableOpacity style={styles.moreButton} onPress={onPress}>
-            <Icon name="ellipsis-vertical" size={16} color="#333" />
-          </TouchableOpacity>
+          <Menu
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            anchor={
+              <TouchableOpacity
+                style={styles.moreButton}
+                onPress={() => setMenuVisible(true)}
+              >
+                <Icon name="ellipsis-vertical" size={16} color="#333" />
+              </TouchableOpacity>
+            }
+          >
+            <Menu.Item
+              onPress={() => {
+                setMenuVisible(false);
+                onViewPress?.();
+              }}
+              title="Ver postagem"
+            />
+            {canDelete && (
+              <Menu.Item
+                onPress={() => {
+                  setMenuVisible(false);
+                  onDeletePress?.();
+                }}
+                title="Excluir"
+                titleStyle={{ color: '#d32f2f' }}
+              />
+            )}
+          </Menu>
         </View>
       </View>
 
