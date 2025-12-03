@@ -1,6 +1,6 @@
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Marker, MarkerPressEvent } from 'react-native-maps';
 import {
   CategoryMarkerConfig,
@@ -39,6 +39,21 @@ export default function CategoryMarker({
   const config = categoryConfig || getCategoryMarkerConfig(categorySlug);
   const { color, backgroundColor, icon } = config;
 
+  // On Android, we need tracksViewChanges=true initially for the icon to render,
+  // then switch to false to prevent blinking/performance issues
+  const [tracksViewChanges, setTracksViewChanges] = useState(
+    Platform.OS === 'android'
+  );
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && tracksViewChanges) {
+      const timer = setTimeout(() => {
+        setTracksViewChanges(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [tracksViewChanges]);
+
   return (
     <Marker
       identifier={id}
@@ -47,7 +62,7 @@ export default function CategoryMarker({
       description={description}
       onPress={onPress}
       draggable={draggable}
-      tracksViewChanges={false} // Disable to prevent blinking/performance issues
+      tracksViewChanges={tracksViewChanges}
       anchor={{ x: 0.5, y: 1 }} // Anchor at bottom center of the marker
     >
       <View style={styles.markerContainer}>
@@ -77,6 +92,19 @@ export function CategoryDotMarker({
   const config = categoryConfig || getCategoryMarkerConfig(categorySlug);
   const { backgroundColor } = config;
 
+  const [tracksViewChanges, setTracksViewChanges] = useState(
+    Platform.OS === 'android'
+  );
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && tracksViewChanges) {
+      const timer = setTimeout(() => {
+        setTracksViewChanges(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [tracksViewChanges]);
+
   return (
     <Marker
       identifier={id}
@@ -84,7 +112,7 @@ export function CategoryDotMarker({
       title={title}
       description={description}
       onPress={onPress}
-      tracksViewChanges={false}
+      tracksViewChanges={tracksViewChanges}
       anchor={{ x: 0.5, y: 0.5 }}
     >
       <View style={styles.dotContainer}>
