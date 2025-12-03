@@ -1,15 +1,15 @@
 import * as SecureStore from 'expo-secure-store';
 
 export default class SecureStoreService {
-  setItem(key: string, value: string) {
-    SecureStore.setItemAsync(key, value);
+  setItem(key: string, value: string): Promise<void> {
+    return SecureStore.setItemAsync(key, value);
   }
 
-  getItem(key: string) {
+  getItem(key: string): Promise<string | null> {
     return SecureStore.getItemAsync(key);
   }
 
-  deleteItem(key: string) {
-    SecureStore.deleteItemAsync(key);
+  deleteItem(key: string): Promise<void> {
+    return SecureStore.deleteItemAsync(key);
   }
 }

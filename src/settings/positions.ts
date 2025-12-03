@@ -5,7 +5,7 @@ const defaultPositions = {
   bottom: defaultBottomNavigation.height + defaultMargins.default * 2,
   right: defaultMargins.default,
   left: defaultMargins.default,
-  top: 24,
+  top: 52,
 };
 
 export default defaultPositions;

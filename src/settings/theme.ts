@@ -15,11 +15,11 @@ export const lightTheme: MD3Theme = {
   ...defaultValues,
   colors: {
     ...MD3LightTheme.colors,
-    primary: "#FCBD00",
-    primaryContainer: "#FFE07C",
-    secondary: "#FFF2B4",
-    secondaryContainer: "#FFFADE",
-    background: "#d5d5d5",
+    primary: '#FCBD00',
+    primaryContainer: '#FFE07C',
+    secondary: '#FFF2B4',
+    secondaryContainer: '#FFFADE',
+    background: '#d5d5d5',
   },
 };
 

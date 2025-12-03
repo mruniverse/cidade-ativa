@@ -1,15 +1,10 @@
-import { NavigationContainer, NavigatorScreenParams } from "@react-navigation/native";
-import React from "react";
-import { PaperProvider } from "react-native-paper";
-import { useAuth } from "../features/auth/authProvider";
-import { darkTheme, lightTheme, settings } from "../settings/theme";
-import AppStack, { AppStackParamList } from "./AppStack";
-import AuthStack, { AuthStackParamList } from "./AuthStack";
-
-export type RootStackParamList = {
-  App: NavigatorScreenParams<AppStackParamList>;
-  Auth: NavigatorScreenParams<AuthStackParamList>;
-};
+import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import { PaperProvider } from 'react-native-paper';
+import { useAuth } from '../features/auth/authProvider';
+import { darkTheme, lightTheme, settings } from '../settings/theme';
+import AppStack from './AppStack';
+import AuthStack from './AuthStack';
 
 export default function RootNavigator() {
   const { user } = useAuth();

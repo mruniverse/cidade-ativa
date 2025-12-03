@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Card, Modal } from 'react-native-paper';
-import { ApiService } from '../api/api.service';
-import defaultMargins from '../settings/margins';
-import defaultBorderRadius from '../settings/radius';
-import { Category } from '../types/category';
-import { getLocationData } from '../utils/location.utils';
-import AutoCompleteComponent from './autoCompleteComponent';
-import CustomTextInput from './TextInputComponent';
+import { ApiService } from '../../../api/api.service';
+import AutoCompleteComponent from '../../../components/autoCompleteComponent';
+import CustomTextInput from '../../../components/TextInputComponent';
+import defaultMargins from '../../../settings/margins';
+import defaultBorderRadius from '../../../settings/radius';
+import { getLocationData } from '../../../utils/location.utils';
+import { Category } from '../../categories/category.types';
+import { usePost } from '../postProvider';
 
 interface NewPostModalProps {
   isVisible?: boolean;
@@ -22,6 +23,7 @@ interface NewPostModalProps {
 
 export default function NewPostModal(props: Readonly<NewPostModalProps>) {
   const api = new ApiService();
+  const { createPost } = usePost();
   const [modalVisible, setModalVisible] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
@@ -103,7 +105,7 @@ export default function NewPostModal(props: Readonly<NewPostModalProps>) {
       }
 
       console.log('Sending post data...');
-      const createdPost = await api.createPost(formDataToSend);
+      const createdPost = await createPost(formDataToSend);
       console.log('Post created successfully:', createdPost);
 
       if (props.onSavePost) {
