@@ -6,22 +6,21 @@ import MapView, {
   MapViewProps,
   PROVIDER_GOOGLE,
 } from 'react-native-maps';
-import { useTheme } from 'react-native-paper';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { PostService } from '../features/posts/post.service';
+import { Post } from '../features/posts/post.types';
 import defaultPositions from '../settings/positions';
-import MarkerComponent, { MarkerComponentProps } from './MarkerComponent';
+import CategoryMarker, { CategoryMarkerProps } from './CategoryMarker';
 
 interface CustomMapViewProps extends MapViewProps {
   onNewMarker?: any;
 }
 
 export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
-  const theme = useTheme();
   const postService = new PostService();
   const mapScale = 4;
   const mapRef = useRef<MapView | null>(null);
-  const [markers, setMarkers] = useState<MarkerComponentProps[]>([]);
+  const [markers, setMarkers] = useState<CategoryMarkerProps[]>([]);
   const initialRegion = {
     latitude: -24.0438,
     longitude: -52.3811,
@@ -30,10 +29,11 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
   };
 
   useEffect(() => {
-    request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION).then(result => {
+    request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION).then(() => {
       setUserCurrentLocationOnMap();
       loadPostsFromAPI();
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadPostsFromAPI() {
@@ -46,8 +46,8 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
       );
 
       if (data && data.length > 0) {
-        const postMarkers: MarkerComponentProps[] = data.map(post => {
-          const marker = {
+        const postMarkers: CategoryMarkerProps[] = data.map((post: Post) => {
+          const marker: CategoryMarkerProps = {
             id: `post_${post.id}`,
             coordinate: {
               latitude: -Math.abs(post.latitude / 10000),
@@ -55,7 +55,7 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
             },
             title: post.nome,
             description: post.conteudo,
-            pinColor: theme.colors.secondary,
+            categorySlug: post.category_name,
           };
           console.log('Created marker:', marker);
           return marker;
@@ -92,7 +92,8 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
   async function addMarkerAtUserLocation(postData: any) {
     const location = await Location.getCurrentPositionAsync({});
     if (location) {
-      const newMarker: MarkerComponentProps = {
+      const categorySlug = postData.category?.slug || postData.category?.name;
+      const newMarker: CategoryMarkerProps = {
         id: `post_${Date.now()}`,
         coordinate: {
           latitude: location.coords.latitude,
@@ -100,7 +101,8 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
         },
         title: postData.category?.title || 'Nova Ocorrência',
         description: postData.description,
-        pinColor: theme.colors.primary,
+        categorySlug: categorySlug,
+        draggable: true,
       };
 
       setMarkers(prev => [...prev, newMarker]);
@@ -109,7 +111,7 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
 
   function handleMapPress(event: MapPressEvent) {
     const coordinate = event.nativeEvent.coordinate;
-    const newMarker: MarkerComponentProps = {
+    const newMarker: CategoryMarkerProps = {
       id: `map_${Date.now()}_${coordinate.latitude}_${coordinate.longitude}`,
       coordinate: {
         latitude: coordinate.latitude,
@@ -117,7 +119,7 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
       },
       title: 'New Marker',
       description: 'Description of the new marker',
-      pinColor: theme.colors.primary,
+      categorySlug: 'outro', // Default category for new markers
     };
 
     setMarkers(prev => [...prev, newMarker]);
@@ -141,7 +143,7 @@ export default function MapViewComponent(props: Readonly<CustomMapViewProps>) {
       showsUserLocation={true}
     >
       {markers.map(marker => (
-        <MarkerComponent key={marker.id} {...marker} />
+        <CategoryMarker key={marker.id} {...marker} />
       ))}
     </MapView>
   );

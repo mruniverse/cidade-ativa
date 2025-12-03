@@ -22,6 +22,9 @@ export interface Post {
     username: string;
   };
   comentarios?: Comment[];
+  category_id?: string;
+  category_name?: string;
+  category_icon?: string;
 }
 
 export interface CreateCommentPayload {
