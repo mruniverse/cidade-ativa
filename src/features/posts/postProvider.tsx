@@ -79,7 +79,6 @@ export function PostProvider({
 
   const refreshPosts = useCallback(
     async (lat: number, lon: number) => {
-      setPosts([]);
       await loadPosts(1, lat, lon);
     },
     [loadPosts]

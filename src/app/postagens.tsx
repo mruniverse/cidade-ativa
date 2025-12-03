@@ -1,13 +1,8 @@
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  View,
-} from 'react-native';
-import { Text } from 'react-native-paper';
+import { FlatList, RefreshControl, View } from 'react-native';
+import { ActivityIndicator, Text } from 'react-native-paper';
 
 import PostCardComponent from '../features/posts/components/PostCard';
 import { usePost } from '../features/posts/postProvider';
@@ -114,7 +109,7 @@ export default function Postagens() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
         ListFooterComponent={
-          loading ? <ActivityIndicator size="large" /> : null
+          loading && !refreshing ? <ActivityIndicator size="large" /> : null
         }
       />
     </View>

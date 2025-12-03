@@ -10,6 +10,7 @@ import {
 import { Text, useTheme } from 'react-native-paper';
 import Icon from '../../../components/IconComponent';
 import { Comment, Post } from '../post.types';
+import { formatRelativeTime, formatViewCommentsText } from '../post.utils';
 
 interface PostCardComponentProps {
   post: Post;
@@ -19,32 +20,6 @@ interface PostCardComponentProps {
   onLoadComments?: (postId: string) => Promise<void>;
   comments?: Comment[];
   isLoadingComments?: boolean;
-}
-
-function getTimeAgo(dateString: string): string {
-  const now = new Date();
-  const date = new Date(dateString);
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'agora';
-  if (diffMins < 60) return `${diffMins}min`;
-  if (diffHours < 24) return `${diffHours}h`;
-  if (diffDays < 7) return `${diffDays}d`;
-  return date.toLocaleDateString('pt-BR');
-}
-
-function getViewCommentsText(
-  isLoading: boolean,
-  showComments: boolean,
-  count: number
-): string {
-  if (isLoading) return 'Carregando...';
-  if (showComments) return 'Ocultar comentários';
-  if (count === 1) return 'Ver 1 comentário';
-  return `Ver ${count} comentários`;
 }
 
 export default function PostCardComponent({
@@ -60,7 +35,7 @@ export default function PostCardComponent({
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const timeAgo = getTimeAgo(post.criado_em);
+  const relativeDate = formatRelativeTime(post.criado_em);
   const isGuestUser =
     !post.autor?.username ||
     post.autor.username.toLowerCase() === 'guest' ||
@@ -118,9 +93,12 @@ export default function PostCardComponent({
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.moreButton} onPress={onPress}>
-          <Icon name="ellipsis-vertical" size={16} color="#333" />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <Text style={styles.relativeDate}>{relativeDate}</Text>
+          <TouchableOpacity style={styles.moreButton} onPress={onPress}>
+            <Icon name="ellipsis-vertical" size={16} color="#333" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {post.imagem && (
@@ -130,8 +108,6 @@ export default function PostCardComponent({
           resizeMode="cover"
         />
       )}
-
-      <Text style={styles.timeAgo}>{timeAgo}</Text>
 
       <View style={styles.content}>
         {!!post.conteudo && <Text style={styles.caption}>{post.conteudo}</Text>}
@@ -143,7 +119,7 @@ export default function PostCardComponent({
             disabled={isLoadingComments}
           >
             <Text style={styles.viewCommentsText}>
-              {getViewCommentsText(
+              {formatViewCommentsText(
                 isLoadingComments,
                 showComments,
                 commentsCount
@@ -274,7 +250,6 @@ const styles = StyleSheet.create({
   },
   headerInfo: {
     justifyContent: 'center',
-    flex: 1,
   },
   username: {
     fontWeight: '600',
@@ -288,7 +263,14 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1,
   },
-  moreButton: {},
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  moreButton: {
+    padding: 4,
+  },
   content: {
     paddingHorizontal: 14,
     paddingBottom: 8,
@@ -331,11 +313,10 @@ const styles = StyleSheet.create({
   commentText: {
     color: '#555',
   },
-  timeAgo: {
+  relativeDate: {
     fontSize: 12,
     color: '#999',
-    paddingHorizontal: 14,
-    paddingTop: 10,
+    marginRight: 8,
   },
   commentInputContainer: {
     flexDirection: 'row',
