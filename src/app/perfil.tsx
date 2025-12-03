@@ -335,6 +335,7 @@ const styles = StyleSheet.create({
   },
   profileContent: {
     padding: 24,
+    paddingTop: 60,
     alignItems: 'center',
   },
   avatarSection: {

@@ -72,6 +72,7 @@ export default function RootLayout() {
                 name="perfil"
                 options={{
                   title: 'Perfil',
+                  headerShown: false,
                   tabBarIcon: ({ size, focused }) => (
                     <FontAwesome6
                       style={{ marginTop: -5 }}
