@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useAuth } from "../providers/authProvider";
+import React, { useState } from 'react';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useAuth } from '../features/auth/authProvider';
 
 type Props = {
   navigation: any;
@@ -8,25 +8,25 @@ type Props = {
 
 export default function RegisterScreen({ navigation }: Props) {
   const { register } = useAuth();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [senha2, setSenha2] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [senha2, setSenha2] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleRegister() {
     if (senha !== senha2) {
-      alert("As senhas não coincidem");
+      alert('As senhas não coincidem');
       return;
     }
 
     setLoading(true);
     try {
       await register(username, email, senha, senha2);
-      alert("Conta criada com sucesso!");
-      navigation.replace("login");
+      alert('Conta criada com sucesso!');
+      navigation.replace('login');
     } catch (err) {
-      alert("Erro ao registrar. Verifique os dados.");
+      alert('Erro ao registrar. Verifique os dados.');
     } finally {
       setLoading(false);
     }
@@ -66,9 +66,12 @@ export default function RegisterScreen({ navigation }: Props) {
         secureTextEntry
       />
 
-      <Button title={loading ? "Registrando..." : "Registrar"} onPress={handleRegister} />
+      <Button
+        title={loading ? 'Registrando...' : 'Registrar'}
+        onPress={handleRegister}
+      />
 
-      <Text style={styles.link} onPress={() => navigation.navigate("login")}>
+      <Text style={styles.link} onPress={() => navigation.navigate('login')}>
         Já tem conta? Faça login
       </Text>
     </View>
@@ -78,24 +81,24 @@ export default function RegisterScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     padding: 10,
     marginBottom: 15,
     borderRadius: 5,
   },
   link: {
     marginTop: 15,
-    textAlign: "center",
-    color: "blue",
+    textAlign: 'center',
+    color: 'blue',
   },
 });

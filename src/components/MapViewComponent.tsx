@@ -8,7 +8,7 @@ import MapView, {
 } from 'react-native-maps';
 import { useTheme } from 'react-native-paper';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { PostService } from '../api/post.service';
+import { PostService } from '../features/posts/post.service';
 import defaultPositions from '../settings/positions';
 import MarkerComponent, { MarkerComponentProps } from './MarkerComponent';
 

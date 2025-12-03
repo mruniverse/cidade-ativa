@@ -1,5 +1,5 @@
+import { User } from '../features/auth/user.types';
 import SecureStoreService from '../storage/secureStore.service';
-import { User } from '../types/user';
 
 type LoginResponse = {
   access: string;

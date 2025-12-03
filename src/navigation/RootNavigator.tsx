@@ -1,8 +1,8 @@
-import { NavigationContainer } from "@react-navigation/native";
-import React from "react";
-import { useAuth } from "../providers/authProvider";
-import AppStack from "./AppStack";
-import AuthStack from "./AuthStack";
+import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import { useAuth } from '../features/auth/authProvider';
+import AppStack from './AppStack';
+import AuthStack from './AuthStack';
 
 export default function RootNavigator() {
   const { user } = useAuth();

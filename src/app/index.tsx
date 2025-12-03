@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { FAB as Fab, useTheme } from 'react-native-paper';
 import CameraComponent from '../components/CameraComponent';
 import MapViewComponent from '../components/MapViewComponent';
-import NewPostModal from '../components/NewPostModal';
+import NewPostModal from '../features/posts/components/NewPostModal';
 import defaultPositions from '../settings/positions';
 
 export default function Index() {

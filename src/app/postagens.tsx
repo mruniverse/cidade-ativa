@@ -1,109 +1,151 @@
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  View,
-} from 'react-native';
-import { Text } from 'react-native-paper';
+import { Alert, FlatList, RefreshControl, View } from 'react-native';
+import { ActivityIndicator, Text } from 'react-native-paper';
 
-import { PostService } from '../api/post.service';
-import PostCard from '../components/PostCard';
+import { useAuth } from '../features/auth/authProvider';
+import PostCardComponent from '../features/posts/components/PostCard';
+import PostDetailModal from '../features/posts/components/PostDetailModal';
+import { Post } from '../features/posts/post.types';
+import { usePost } from '../features/posts/postProvider';
 import defaultPositions from '../settings/positions';
-import { Post } from '../types/post';
 
 export default function Postagens() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { user } = useAuth();
+  const {
+    posts,
+    loading,
+    error,
+    loadPosts,
+    refreshPosts,
+    deletePost,
+    addComment,
+    loadPostComments,
+  } = usePost();
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingCommentsFor, setLoadingCommentsFor] = useState<string | null>(
+    null
+  );
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     null
   );
-  const postService = new PostService();
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
+        const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setError('Permissão de localização negada');
           return;
         }
-        let location = await Location.getCurrentPositionAsync({});
+        const location = await Location.getCurrentPositionAsync({});
         setCoords({
           lat: location.coords.latitude,
           lon: location.coords.longitude,
         });
       } catch {
-        setError('Erro ao obter localização');
+        // Location error handled silently
       }
     })();
   }, []);
 
   useEffect(() => {
     if (!coords) return;
-
     loadPosts(1, coords.lat, coords.lon);
-  }, [coords]);
+  }, [coords, loadPosts]);
 
-  async function loadPosts(page: number, lat: number, lon: number) {
-    setLoading(true);
-    try {
-      const data = await postService.getPosts(page, lat, lon);
-      if (!data) throw new Error('Nenhuma postagem encontrada');
-
-      setPosts(prev => {
-        if (page === 1) return data;
-        // Remove duplicates based on ID
-        const existingIds = new Set(prev.map(p => p.id));
-        const newPosts = data.filter(p => !existingIds.has(p.id));
-        return [...prev, ...newPosts];
-      });
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+  const handleLoadMore = () => {
+    if (!loading && coords) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      loadPosts(nextPage, coords.lat, coords.lon);
     }
-  }
+  };
+
+  const handleRefresh = async () => {
+    if (!coords) return;
+    setRefreshing(true);
+    setPage(1);
+    await refreshPosts(coords.lat, coords.lon);
+    setRefreshing(false);
+  };
+
+  const handleSubmitComment = async (postId: string, content: string) => {
+    await addComment(postId, content);
+  };
+
+  const handleLoadComments = async (postId: string) => {
+    setLoadingCommentsFor(postId);
+    try {
+      await loadPostComments(postId);
+    } finally {
+      setLoadingCommentsFor(null);
+    }
+  };
+
+  const handleDeletePost = (postId: string) => {
+    Alert.alert(
+      'Excluir postagem',
+      'Tem certeza que deseja excluir esta postagem?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            deletePost(postId).catch(() => {
+              Alert.alert('Erro', 'Não foi possível excluir a postagem.');
+            });
+          },
+        },
+      ]
+    );
+  };
+
+  const reversedPosts = [...posts].reverse();
 
   return (
     <View style={{ flex: 1 }}>
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
       <FlatList
-        data={[...posts].reverse()}
+        data={reversedPosts}
         keyExtractor={(item, index) => `${item.id}-${index}`}
-        renderItem={({ item, index }) =>
-          index === posts.length - 1 ? (
-            <PostCard
+        renderItem={({ item, index }) => {
+          const isFirst = index === 0;
+          const isLast = index === reversedPosts.length - 1;
+
+          return (
+            <PostCardComponent
               post={item}
-              style={{ marginBottom: defaultPositions.bottom }}
+              style={{
+                ...(isFirst && { marginTop: Constants.statusBarHeight }),
+                ...(isLast && { marginBottom: defaultPositions.bottom }),
+              }}
+              currentUserId={user?.id}
+              onViewPress={() => setSelectedPost(item)}
+              onDeletePress={() => handleDeletePost(item.id)}
+              onImagePress={() => setSelectedPost(item)}
+              onSubmitComment={handleSubmitComment}
+              onLoadComments={handleLoadComments}
+              isLoadingComments={loadingCommentsFor === item.id}
             />
-          ) : (
-            <PostCard post={item} />
-          )
-        }
-        onEndReached={() => {
-          if (!loading && coords) {
-            setPage(prev => prev + 1);
-            loadPosts(page + 1, coords.lat, coords.lon);
-          }
+          );
         }}
+        onEndReached={handleLoadMore}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => {
-              setRefreshing(true);
-              if (coords) loadPosts(1, coords.lat, coords.lon);
-            }}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
         ListFooterComponent={
-          loading ? <ActivityIndicator size="large" /> : null
+          loading && !refreshing ? <ActivityIndicator size="large" /> : null
         }
+      />
+
+      <PostDetailModal
+        post={selectedPost}
+        visible={selectedPost !== null}
+        onClose={() => setSelectedPost(null)}
       />
     </View>
   );

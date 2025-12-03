@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useAuth } from '../providers/authProvider';
+import { useAuth } from '../features/auth/authProvider';
 
 type Props = {
   navigation: any;

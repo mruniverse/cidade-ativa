@@ -1,5 +1,5 @@
-import { Post } from '../types/post';
-import { ApiService } from './api.service';
+import { ApiService } from '../../api/api.service';
+import { Comment, CreateCommentPayload, Post } from './post.types';
 
 export class PostService {
   private readonly apiService: ApiService;
@@ -23,7 +23,9 @@ export class PostService {
   }
 
   async getPostById(id: string): Promise<Post> {
-    const response = await this.apiService.get(`postagens/${id}`);
+    const response = await this.apiService.get('postagens/read', {
+      postagem_id: id,
+    });
 
     if (!response.ok) {
       throw new Error('Erro ao buscar postagem');
@@ -53,10 +55,36 @@ export class PostService {
   }
 
   async deletePost(id: string): Promise<void> {
-    const response = await this.apiService.delete(`postagens/${id}`);
+    const response = await this.apiService.delete(`postagens/deletar/${id}`);
 
     if (!response.ok) {
       throw new Error('Erro ao deletar postagem');
     }
+  }
+
+  // Comments
+  async createComment(payload: CreateCommentPayload): Promise<{ id: string }> {
+    const response = await this.apiService.post('postagens/comentar', payload);
+
+    if (!response.ok) {
+      throw new Error('Erro ao criar comentário');
+    }
+
+    return response.json();
+  }
+
+  async deleteComment(comentarioId: string): Promise<void> {
+    const response = await this.apiService.delete(
+      `postagens/comentarios/deletar/${comentarioId}`
+    );
+
+    if (!response.ok) {
+      throw new Error('Erro ao deletar comentário');
+    }
+  }
+
+  async getPostComments(postagemId: string): Promise<Comment[]> {
+    const post = await this.getPostById(postagemId);
+    return post.comentarios ?? [];
   }
 }

@@ -9,11 +9,11 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { TokenExpiredError, TokenInvalidError } from '../api/api.errors';
-import { ApiService } from '../api/api.service';
-import { AuthService } from '../api/auth.service';
-import SecureStoreService from '../storage/secureStore.service';
-import { User } from '../types/user';
+import { TokenExpiredError, TokenInvalidError } from '../../api/api.errors';
+import { ApiService } from '../../api/api.service';
+import { AuthService } from '../../api/auth.service';
+import SecureStoreService from '../../storage/secureStore.service';
+import { User } from './user.types';
 
 type AuthContextType = {
   user: User | null;
@@ -26,6 +26,11 @@ type AuthContextType = {
     senha2: string
   ) => Promise<void>;
   logout: () => void;
+};
+
+type LoginResponse = {
+  access: string;
+  usuario: User;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
