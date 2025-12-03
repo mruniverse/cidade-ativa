@@ -1,69 +1,69 @@
 name: EAS Build
 
 on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-    build:
-        name: Build Android APK (Development)
-        runs-on: ubuntu-latest
+  build:
+    name: Build Android APK (Development)
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 22.11.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
 
-            - name: Setup Bun
-              uses: oven-sh/setup-bun@v2
-              with:
-                  bun-version: latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-            - name: Setup EAS CLI
-              uses: expo/expo-github-action@v8
-              with:
-                  eas-version: latest
-                  token: ${{ secrets.EXPO_TOKEN }}
+      - name: Setup EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
 
-            - name: Install dependencies
-              run: bun install
+      - name: Install dependencies
+        run: bun install
 
-            - name: Build Android APK
-              run: |
-                  eas build --platform android --profile development --non-interactive --json > build-result.json
-                  echo "BUILD_URL=$(cat build-result.json | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_ENV
+      - name: Build Android APK
+        run: |
+          eas build --platform android --profile development --non-interactive --json > build-result.json
+          echo "BUILD_URL=$(cat build-result.json | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_ENV
 
-            - name: Download APK from EAS
-              run: |
-                  curl -L -o cidade-ativa-dev.apk "${{ env.BUILD_URL }}"
+      - name: Download APK from EAS
+        run: |
+          curl -L -o cidade-ativa-dev.apk "${{ env.BUILD_URL }}"
 
-            - name: Get version from app.config
-              id: version
-              run: |
-                  VERSION=$(node -e "console.log(require('./app.config.ts').default?.version || require('./app.json').expo.version)")
-                  echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-                  echo "DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+      - name: Get version from app.config
+        id: version
+        run: |
+          VERSION=$(grep -oP "version:\s*['\"]?\K[0-9]+\.[0-9]+\.[0-9]+" app.config.ts | head -1)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
 
-            - name: Create GitHub Release
-              uses: softprops/action-gh-release@v2
-              with:
-                  tag_name: v${{ steps.version.outputs.VERSION }}-dev-${{ steps.version.outputs.DATE }}
-                  name: Development Build v${{ steps.version.outputs.VERSION }}
-                  body: |
-                      ## Development Build
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.VERSION }}-dev-${{ steps.version.outputs.DATE }}
+          name: Development Build v${{ steps.version.outputs.VERSION }}
+          body: |
+            ## Development Build
 
-                      Automated development build from commit ${{ github.sha }}
+            Automated development build from commit ${{ github.sha }}
 
-                      **Branch:** main
-                      **Commit:** ${{ github.sha }}
-                      **Date:** ${{ steps.version.outputs.DATE }}
-                  files: cidade-ativa-dev.apk
-                  prerelease: true
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            **Branch:** main
+            **Commit:** ${{ github.sha }}
+            **Date:** ${{ steps.version.outputs.DATE }}
+          files: cidade-ativa-dev.apk
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
