@@ -1,7 +1,6 @@
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
-import Constants from 'expo-constants';
 import { Tabs } from 'expo-router';
-import { useColorScheme, View } from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 import { PaperProvider } from 'react-native-paper';
 import BottomNavigationBar from '../components/BottomNavigationBar';
@@ -18,16 +17,12 @@ export default function RootLayout() {
       <PostProvider>
         <PaperProvider theme={theme} settings={settings}>
           <AutocompleteDropdownContextProvider>
-            <View
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: Constants.statusBarHeight,
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                zIndex: 100,
-              }}
+            <StatusBar
+              barStyle={
+                colorScheme === 'dark' ? 'dark-content' : 'light-content'
+              }
+              backgroundColor={'rgba(0, 0, 0, 0.4)'}
+              translucent
             />
             <Tabs
               tabBar={BottomNavigationBar}

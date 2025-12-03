@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { TextInput, TextInputProps, useTheme } from 'react-native-paper';
 
 export default function CustomTextInput(props: TextInputProps) {
@@ -9,7 +9,11 @@ export default function CustomTextInput(props: TextInputProps) {
   return (
     <TextInput
       {...props}
-      style={{ ...styles.container, backgroundColor: theme.colors.surface }}
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.surface },
+        props.style as StyleProp<ViewStyle>,
+      ]}
       mode="outlined"
       outlineColor="rgba(38, 50, 56, 0.2)"
       activeOutlineColor={theme.colors.primary}
